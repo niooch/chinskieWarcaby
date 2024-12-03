@@ -7,5 +7,6 @@ target/
 .classpath
 #ignoruj pliki z rozszerzeniem .jar
 *.jar
-
 .project
+#ignoruj idea
+.idea/
