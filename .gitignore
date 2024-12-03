@@ -1,2 +1,4 @@
 #ignoruj katalog target
 target/
+#settings tez
+.settings/
