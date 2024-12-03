@@ -1,0 +1,23 @@
+@startuml
+
+title Client-Server Interaction for a Move
+
+actor Player
+participant Client
+participant Server
+participant GameSession
+participant OtherClients as "Other Clients"
+
+Player -> Client: Input Move
+Client -> Server: sendMove(move)
+Server -> GameSession: validateAndProcessMove(move)
+GameSession -> Server: moveResult (success/failure)
+Server -> Client: sendMoveResult(moveResult)
+Client -> Player: Display Move Result
+
+alt moveResult is success
+    Server -> OtherClients: broadcastMove(move)
+    OtherClients -> Players: Display Move
+end
+
+@enduml
