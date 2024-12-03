@@ -9,8 +9,9 @@ import java.util.concurrent.*;
 public class Server {
     private static final int PORT = 12345;
     private ServerSocket serverSocket;
-    private List<ClientHandler> clientHandlers;
+    private List<ClientHandler> clientHandlers = new ArrayList<>();
     private ExecutorService threadPool = Executors.newCachedThreadPool();
+    private List<GameSession> gameSessions = new ArrayList<>();
 
     public void startServer() {
         try {
