@@ -5,24 +5,22 @@ title Diagram klas chinskich warcab
 ' pakiety
 package "Server Side" {
     class Server {
-        design pattern: Singleton
-        --
-        - instance : Server
         - games : List<Game>
         - clients : List<ClientHandler>
+        - port : int
+        - serverSocket : ServerSocket
+        - EXECUTOR : ExecutorService
         + startServer() : void
         + acceptConnections() : void
-        + broadcastUpdate(msg : Message) : void
-        + sendToClient(client : ClientHandler, msg : Message) : void
+        + removeClient(client : ClientHandler) : void
+        + createGameSession(int : playerCount) : void
+        + main() : void
     }
 
-    class ClientHandler {
-        design pattern: Singleton
-        --
+    class ClientHandler implements Runnable {
         - socket : Socket
         - out : OutputStream
         - in : InputStream
-        - player : Player
         + run() : void
         + send(msg : Message) : void
     }
@@ -39,11 +37,6 @@ package "Client Side" {
         + main() : void
     }
 
-    class ServerConnection {
-        - socket : Socket
-        + send(msg : Message) : void
-        + receive() : Message
-    }
 }
 
 package "Game Logic" {
@@ -107,11 +100,8 @@ package "Game Logic" {
 }
 
 package "Communication" {
-    class Message {
-        - content : String
-        - type : MessageType
-        + serialize() : String
-        + deserialize(data : String) : Message
+    interface Message {
+        + getType() : MessageType
     }
 
     enum MessageType {
@@ -119,6 +109,35 @@ package "Communication" {
         UPDATE
         JOIN
         START_GAME
+        ERROR
+    }
+
+    class JoinGameMessage {
+        - playerCount : int
+        + JoinGameMessage(playerCount : int)
+        + getPlayerCount() : int
+        + getType() : MessageType
+    }
+
+    class MoveMessage {
+        - move : Move
+        + MoveMessage(move : Move)
+        + getMove() : Move
+        + getType() : MessageType
+    }
+
+    class UpdateMessage {
+        - board : Board
+        + UpdateMessage(board : Board)
+        + getBoard() : Board
+        + getType() : MessageType
+    }
+
+    class ErrorMessage {
+        - message : String
+        + ErrorMessage(message : String)
+        + getMessage() : String
+        + getType() : MessageType
     }
 }
 
@@ -126,9 +145,9 @@ package "Communication" {
 Server "1" o-- "*" ClientHandler : manages
 ClientHandler --> ServerConnection
 
-Client "1" --> "1" ServerConnection
+Client "1" --> "1" ClientHandler
 
-ServerConnection <--> Message
+Client <--> Message
 
 Server o-- Game : manages
 Game o-- Board
@@ -143,5 +162,11 @@ Move --> Player
 
 Client --> Move : sendMove()
 Game --> Move : processMove()
+
+Message <|-- JoinGameMessage
+Message <|-- MoveMessage
+Message <|-- UpdateMessage
+Message <|-- ErrorMessage
+
 
 @enduml

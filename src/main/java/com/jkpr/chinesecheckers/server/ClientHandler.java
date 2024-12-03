@@ -2,6 +2,7 @@ package com.jkpr.chinesecheckers.server;
 
 import java.io.*;
 import java.net.Socket;
+import com.jkpr.chinesecheckers.server.message.*;
 
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -24,7 +25,7 @@ public class ClientHandler implements Runnable {
     }
 
     @Override
-    public void run(){
+    public void run() {
         try{
             while(true){
                 Message msg = (Message) in.readObject();
@@ -42,10 +43,10 @@ public class ClientHandler implements Runnable {
         switch (msg.getType()) {
             case JOIN:
                 handleJoinGame((JoinGameMessage) msg);
-                brake;
+                break;
             case MOVE:
                 handleMove((MoveMessage) msg);
-                brake;
+                break;
             // tutaj ida inne typy wiadomosci
             default:
                 System.err.println("nieznany typ wiadomosci");
