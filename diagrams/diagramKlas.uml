@@ -1,0 +1,147 @@
+@startuml
+
+title Diagram klas chinskich warcab
+
+' pakiety
+package "Server Side" {
+    class Server {
+        design pattern: Singleton
+        --
+        - instance : Server
+        - games : List<Game>
+        - clients : List<ClientHandler>
+        + startServer() : void
+        + acceptConnections() : void
+        + broadcastUpdate(msg : Message) : void
+        + sendToClient(client : ClientHandler, msg : Message) : void
+    }
+
+    class ClientHandler {
+        design pattern: Singleton
+        --
+        - socket : Socket
+        - out : OutputStream
+        - in : InputStream
+        - player : Player
+        + run() : void
+        + send(msg : Message) : void
+    }
+}
+
+package "Client Side" {
+    class Client {
+        design pattern: Observer
+        --
+        - serverConnection : ServerConnection
+        + connectToServer() : void
+        + sendMove(move : Move) : void
+        + receiveUpdate(msg : Message) : void
+        + main() : void
+    }
+
+    class ServerConnection {
+        - socket : Socket
+        + send(msg : Message) : void
+        + receive() : Message
+    }
+}
+
+package "Game Logic" {
+    class Game {
+        - board : Board
+        - players : List<Player>
+        - currentPlayer : Player
+        + addPlayer(player : Player) : void
+        + startGame() : void
+        + processMove(move : Move) : void
+        + isValidMove(move : Move) : boolean
+        + nextTurn() : void
+    }
+    class Board {
+        - cells : Map<Position, Cell>
+        + initialize() : void
+        + getCell(pos : Position) : Cell
+        + movePiece(move : Move) : void
+        + isValidMove(move : Move) : boolean
+    }
+
+    class Player {
+        Design pattern: Factory?
+        --
+        - name : String
+        - color : Color
+        - pieces : List<Piece>
+        + makeMove() : Move
+    }
+
+    class Move {
+        Design pattern: Command
+        --
+        - from : Position
+        - to : Position
+        - player : Player
+        + execute(board : Board) : void
+    }
+    class Cell {
+        - position : Position
+        - piece : Piece
+        + Cell(position : Position)
+        + isOccupied() : boolean
+    }
+
+    class Piece {
+        - owner : Player
+        - position : Position
+        + moveTo(pos : Position) : void
+    }
+    class Position {
+        - q : int
+        - r : int
+        + Position(q : int, r : int)
+        + getQ() : int
+        + getR() : int
+        + getNeighbors() : List<Position>
+        + equals(o : Object) : boolean
+        + hashCode() : int
+    }
+}
+
+package "Communication" {
+    class Message {
+        - content : String
+        - type : MessageType
+        + serialize() : String
+        + deserialize(data : String) : Message
+    }
+
+    enum MessageType {
+        MOVE
+        UPDATE
+        JOIN
+        START_GAME
+    }
+}
+
+' Relationships
+Server "1" o-- "*" ClientHandler : manages
+ClientHandler --> ServerConnection
+
+Client "1" --> "1" ServerConnection
+
+ServerConnection <--> Message
+
+Server o-- Game : manages
+Game o-- Board
+Game o-- Player
+Player o-- Piece
+Board o-- Cell
+Cell o-- Position
+Piece o-- Position
+Move --> Position : from
+Move --> Position : to
+Move --> Player
+
+Client --> Move : sendMove()
+Game --> Move : processMove()
+
+@enduml
