@@ -30,7 +30,12 @@ package "Client Side" {
     class Client {
         design pattern: Observer
         --
-        - serverConnection : ServerConnection
+        - socket : Socket
+        - out : OutputStream
+        - in : InputStream
+        - scanner : Scanner
+        - running : boolean
+        + start() : void
         + connectToServer() : void
         + sendMove(move : Move) : void
         + receiveUpdate(msg : Message) : void
@@ -143,7 +148,6 @@ package "Communication" {
 
 ' Relationships
 Server "1" o-- "*" ClientHandler : manages
-ClientHandler --> ServerConnection
 
 Client "1" --> "1" ClientHandler
 
