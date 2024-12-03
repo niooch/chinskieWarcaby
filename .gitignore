@@ -2,3 +2,10 @@
 target/
 #settings tez
 .settings/
+#ignoruj pliki z rozszerzeniem .class
+*.class
+.classpath
+#ignoruj pliki z rozszerzeniem .jar
+*.jar
+
+.project
