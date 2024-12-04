@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class Cell {
     private Piece piece;
 
     /** The list of players who own this cell. */
-    private List<AbstractPlayer> owners;
+    private List<Player> owners;
 
     /**
      * Constructs a {@code Cell} with a given position and a list of owners.
@@ -31,7 +31,7 @@ public class Cell {
      * @param position the position of the cell on the board
      * @param owners the list of players who own this cell
      */
-    public Cell(Position position, List<AbstractPlayer> owners) {
+    public Cell(Position position, List<Player> owners) {
         this.position = position;
         this.owners = owners;
     }
@@ -44,7 +44,7 @@ public class Cell {
      *
      * @return the list of owners of this cell
      */
-    public List<AbstractPlayer> getOwners() {
+    public List<Player> getOwners() {
         return owners;
     }
 
@@ -70,7 +70,18 @@ public class Cell {
      * @param player the player to check ownership against
      * @return {@code true} if the player owns the piece in this cell, {@code false} otherwise
      */
-    public boolean checkPlayer(AbstractPlayer player) {
+    public boolean checkPlayer(Player player) {
         return piece != null && piece.getOwner().equals(player);
+    }
+
+    public Piece getPiece() {
+        return piece;
+    }
+
+    @Override
+    public String toString() {
+        if(piece==null)
+            return ".";
+        return piece.toString();
     }
 }

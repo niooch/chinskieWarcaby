@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,16 +21,7 @@ public abstract class AbstractBoard {
     /** A list of valid movement directions from any given position. */
     protected List<Position> movements = new ArrayList<>();
 
-    /**
-     * Validates whether a move is legal from a given starting position to a destination position.
-     * <p>
-     * This method is abstract and must be implemented in subclasses to define specific movement rules for the game.
-     * </p>
-     *
-     * @param player the player making the move
-     * @param start the starting position of the move
-     * @param destination the target position of the move
-     * @return {@code true} if the move is valid according to the board's rules, {@code false} otherwise
-     */
-    public abstract boolean isValidMove(AbstractPlayer player, Position start, Position destination);
+    public Map<Position, Cell> getCells(){return cells;}
+    public List<Position> getMovements(){return movements;}
+    public abstract String toString();
 }

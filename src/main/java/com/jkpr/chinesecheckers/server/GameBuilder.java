@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 /**
  * The {@code GameBuilder} interface defines the blueprint for constructing a game of Chinese checkers.
@@ -25,7 +25,8 @@ public interface GameBuilder {
      * and determining player order or teams.
      * </p>
      */
-    void setPlayers();
+    void setPlayers(int count);
+    void setRules();
 
     /**
      * Returns the fully constructed game.

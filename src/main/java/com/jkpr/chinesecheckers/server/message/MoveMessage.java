@@ -1,5 +1,7 @@
 package com.jkpr.chinesecheckers.server.message;
 
+import com.jkpr.chinesecheckers.server.Move;
+
 public class MoveMessage implements Message{
     private Move move;
     public MoveMessage(Move move){

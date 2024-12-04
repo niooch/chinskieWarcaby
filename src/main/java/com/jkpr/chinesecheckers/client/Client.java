@@ -3,6 +3,8 @@ package com.jkpr.chinesecheckers.client;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+
+import com.jkpr.chinesecheckers.server.Move;
 import com.jkpr.chinesecheckers.server.message.*;
 
 public class Client {
