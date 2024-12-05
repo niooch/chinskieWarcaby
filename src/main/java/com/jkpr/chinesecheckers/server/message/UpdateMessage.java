@@ -1,13 +1,15 @@
 package com.jkpr.chinesecheckers.server.message;
 
-public class UpdateMessage implements Message {
-    private Board board;
+import com.jkpr.chinesecheckers.server.AbstractBoard;
 
-    public UpdateMessage(Board board) {
+public class UpdateMessage implements Message {
+    private AbstractBoard board;
+
+    public UpdateMessage(AbstractBoard board) {
         this.board = board;
     }
 
-    public Board getBoard() {
+    public AbstractBoard getBoard() {
         return board;
     }
 
