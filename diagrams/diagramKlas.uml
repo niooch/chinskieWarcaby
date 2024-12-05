@@ -149,7 +149,7 @@ package "Communication" {
 ' Relationships
 Server "1" o-- "*" ClientHandler : manages
 
-Client "1" --> "1" ClientHandler
+Client "1" --> "1" ClientHandler : sends messages
 
 Client <--> Message
 
@@ -164,7 +164,6 @@ Move --> Position : from
 Move --> Position : to
 Move --> Player
 
-Client --> Move : sendMove()
 Game --> Move : processMove()
 
 Message <|-- JoinGameMessage
