@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import com.jkpr.chinesecheckers.server.message.*;
 import java.util.UUID;
+import com.google.gson.Gson;
 
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -36,7 +37,9 @@ public class ClientHandler implements Runnable {
             clientQueue.addClient(this);
             System.out.println("klient dodany do kolejki. Id: " + playerId);
             while(true){
-                Message msg = (Message) in.readObject();
+                //pobranie wiadomosci od serwera
+                String jsonMessage = (String) in.readObject();
+                Message msg =new Gson().fromJson(jsonMessage, Message.class);
                 handleMessage(msg);
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -52,7 +55,7 @@ public class ClientHandler implements Runnable {
             case MOVE:
                 handleMove((MoveMessage) msg);
                 break;
-            // tutaj ida inne typy wiadomosci
+                //tutaj obsluga innych typow wiadomosci
             default:
                 System.err.println("nieznany typ wiadomosci");
         }
@@ -66,9 +69,11 @@ public class ClientHandler implements Runnable {
         }
     }
 
+
     private void sendMessage(Message msg) {
         try{
-            out.writeObject(msg);
+            String jsonMessage = new Gson().toJson(msg);
+            out.writeObject(jsonMessage);
             out.flush();
         } catch (IOException e) {
             System.err.println("blad wysylania wiadomosci do klienta");

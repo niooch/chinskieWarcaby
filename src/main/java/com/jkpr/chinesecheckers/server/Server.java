@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class Server {
-    private static final int PORT = 1001;
+    private static final int PORT = 12345;
     private ServerSocket serverSocket;
     private List<ClientHandler> clientHandlers;
     private ExecutorService threadPool;
@@ -27,8 +27,8 @@ public class Server {
         try {
             serverSocket = new ServerSocket(PORT);
             System.out.println("serwer wystartowal, zaczynam sluchac na " + PORT);
-            //acceptConnections();
             GameCreationManager creationManager = new GameCreationManager(clientQueue, this);
+            threadPool.execute(creationManager);
             while(isRunning){
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("akceptuje polaczenie od " + clientSocket.getInetAddress());

@@ -3,17 +3,19 @@ package com.jkpr.chinesecheckers.server;
 import java.util.*;
 
 public class GameSession {
-    private int playerCount;
     private Server server;
     private List<ClientHandler> players = new ArrayList<>();
     private HashMap<ClientHandler,Player> clientHandlerPlayerHashMap;
     private Game game;
-    public GameSession(int playerCount,Server server)
-    {
+    public GameSession(ClientHandler[] players,Server server){
         clientHandlerPlayerHashMap=new HashMap<>();
 
-        this.playerCount=playerCount;
         this.server=server;
+        for(ClientHandler clientHandler:players)
+        {
+            addPlayer(clientHandler);
+        }
+        int playerCount=players.length;
 
         game=Director.createGame(new CCBuilder(),playerCount);
     }
