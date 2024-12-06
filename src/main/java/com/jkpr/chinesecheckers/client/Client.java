@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import com.jkpr.chinesecheckers.server.AbstractBoard;
-import com.jkpr.chinesecheckers.server.Move;
 import com.jkpr.chinesecheckers.server.message.*;
 
 public class Client {
@@ -49,35 +48,27 @@ public class Client {
                 closeConnection();
                 break;
             }
-            Move move = parseMoveInput(input);
-            if (move != null) {
-                sendMessage(new MoveMessage(move));
-            } else {
-                System.out.println("niepoprawny ruch");
+            String[] parts = input.split(" ");
+            if (parts.length != 2) {
+                System.out.println("niepoprawny format ruchu");
+                continue;
             }
+            String[] from = parts[0].split(",");
+            String[] to = parts[1].split(",");
+            if (from.length != 2 || to.length != 2) {
+                System.out.println("niepoprawny format ruchu");
+                continue;
+            }
+            try {
+                MoveMessage move = new MoveMessage(Integer.parseInt(from[0]), Integer.parseInt(from[1]), Integer.parseInt(to[0]), Integer.parseInt(to[1]));
+                sendMessage(move);
+            } catch (NumberFormatException e) {
+                System.out.println("niepoprawny format ruchu");
+            }
+
         }
     }
 
-    private Move parseMoveInput (String input){
-        String[] parts = input.trim().split("\\s+");
-        if (parts.length != 2) {
-            return null;
-        }
-        String[] from = parts[0].split(",");
-        String[] to = parts[1].split(",");
-        if (from.length != 2 || to.length != 2) {
-            return null;
-        }
-        try {
-            int fromQ = Integer.parseInt(from[0]);
-            int fromR = Integer.parseInt(from[1]);
-            int toQ = Integer.parseInt(to[0]);
-            int toR = Integer.parseInt(to[1]);
-            return new Move(fromQ, fromR, toQ, toR);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
 
     private void sendMessage (Message message){
         try {
