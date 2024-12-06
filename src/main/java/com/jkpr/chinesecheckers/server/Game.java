@@ -1,6 +1,5 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -26,10 +25,13 @@ public class Game {
     //TODO dodawać graczy do tej hashmapy
     // wydaje mi się że lepiej będzie to zrobić zaraz przy inicjacji game, a potem przypisywać tylko kolejnym
     // klientom obiekty
-    private HashMap<Integer, AbstractPlayer> players;
+    private HashMap<Integer, Player> players;
+    private int playersCount=0;
+    private int maxPlayers;
 
     /** The game board. */
     private AbstractBoard board;
+    private AbstractRules rules;
 
     /**
      * Processes the next move in the game.
@@ -41,23 +43,19 @@ public class Game {
      *
      * <p><b>Note:</b> The player is assumed to be the one currently active in the game.</p>
      *
-     * @param message the message containing move information
      */
-    public void nextMove(String message) {
+    public void nextMove(Move move,Player player) {
         //TODO dodać zparsowane dane do obróbki przez funkcję "isValidMove" (gracz niekonieczie musi tu być
         // będzie można wyjąć go jako będącego w stanie active
-        AbstractPlayer player;
-        Position startPos;
-        Position endPos;
 
-        // Validate the move on the board
-        board.isValidMove(player, startPos, endPos);
+        rules.isValidMove(board,player,move.getStart(),move.getEnd());
         //TODO tak naprawdę kolejnym krokiem tutaj będzie coś w stylu board.move albo player.move
         // (chyba to drugie lepsze) jakoś muszę jeszcze rozwiązać problem instancji pionków i tego kto i gdzie
         // ma mieć do nich dostęp.
         // Dalej trzeba będzie zmienić stan graczy, ale tego jeszcze nie zaimplementowałem
         // I na koniec zostaje już tylko sformułować wnioski i to raczej tyle jeśli chodzi o logikę gry
     }
+    public void setMaxPlayers(int maxPlayers){this.maxPlayers=maxPlayers;}
 
     /**
      * Sets the game board.
@@ -81,8 +79,12 @@ public class Game {
      *
      * @param players the {@code HashMap} containing players, keyed by their ID
      */
-    public void setPlayer(HashMap<Integer, AbstractPlayer> players) {
+    public void setPlayer(HashMap<Integer, Player> players) {
         this.players = players;
+    }
+    public void setRules(AbstractRules rules){this.rules=rules;}
+    public Player join(){
+        return players.get(playersCount++);
     }
 }
 

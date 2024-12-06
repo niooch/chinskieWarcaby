@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 /**
  * Represents a game piece in Chinese checkers.
@@ -10,7 +10,12 @@ package com.jkpr.chinesecheckers;
 public class Piece {
 
     /** The player who owns this piece. */
-    private AbstractPlayer owner;
+    private Player owner;
+
+    public Piece(Player player)
+    {
+        owner=player;
+    }
 
     /**
      * Returns the owner of this piece.
@@ -21,7 +26,12 @@ public class Piece {
      *
      * @return the owner of this piece
      */
-    public AbstractPlayer getOwner() {
+    public Player getOwner() {
         return owner;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(owner.getId());
     }
 }

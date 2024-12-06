@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,10 +11,7 @@ import java.util.Objects;
  * The class also includes methods for equality comparison based on player ID.
  * </p>
  */
-public abstract class AbstractPlayer {
-
-    /** The name of the player. */
-    private String name;
+public class Player {
 
     /** The unique identifier for the player. */
     private int id;
@@ -24,6 +21,10 @@ public abstract class AbstractPlayer {
     /** The list of pieces owned by the player. */
     private List<Piece> pieceList;
 
+    public Player(int id)
+    {
+        this.id=id;
+    }
     /**
      * Checks whether this player is equal to another object.
      * <p>
@@ -37,7 +38,7 @@ public abstract class AbstractPlayer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractPlayer player = (AbstractPlayer) o;
+        Player player = (Player) o;
         return id == player.id;
     }
 
@@ -53,5 +54,6 @@ public abstract class AbstractPlayer {
     public int hashCode() {
         return Objects.hash(id);
     }
+    public int getId(){return id;}
 }
 

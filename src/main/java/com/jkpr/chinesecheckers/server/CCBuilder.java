@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 import java.util.HashMap;
 
@@ -36,9 +36,12 @@ public class CCBuilder implements GameBuilder {
      * </p>
      */
     @Override
-    public void setPlayers() {
-        game.setPlayer(new HashMap<Integer, AbstractPlayer>());
+    public void setPlayers(int count) {
+        game.setMaxPlayers(count);
+        game.setPlayer(new HashMap<Integer, Player>());
     }
+    @Override
+    public void setRules(){game.setRules(new CCRules());}
 
     /**
      * Returns the fully constructed Chinese checkers game.

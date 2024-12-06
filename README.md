@@ -27,8 +27,13 @@ Następnie skompilować kod przy użyciu Mavena:
 mvn clean install
 ```
 Uruchomienie gry odbywa się również przy wykorzystaniu Mavena:
+* serwer:
 ```bash
-TODO: mvn exec:java <- dokladnie pozniej dokonczyc
+mvn clean compile exec:java -Pserver
+```
+* klient:
+```bash
+mvn clean compile exec:java -Pclient
 ```
 ## Wykożystane wzorce projektowe/dokumentacja
 W [katalogu diagrams](diagrams) znajdują się diagramy UML, opisujące strukturę projektu oraz jego poszczególnych części.

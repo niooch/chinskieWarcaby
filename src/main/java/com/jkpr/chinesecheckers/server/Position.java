@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers;
+package com.jkpr.chinesecheckers.server;
 
 import java.util.Objects;
 
