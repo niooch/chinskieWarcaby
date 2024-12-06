@@ -2,10 +2,11 @@ package com.jkpr.chinesecheckers.server.message;
 
 import com.jkpr.chinesecheckers.server.AbstractBoard;
 
-public class UpdateMessage implements Message {
+public class UpdateMessage extends Message {
     private AbstractBoard board;
 
     public UpdateMessage(AbstractBoard board) {
+        super(MessageType.UPDATE);
         this.board = board;
     }
 
@@ -13,8 +14,4 @@ public class UpdateMessage implements Message {
         return board;
     }
 
-    @Override
-    public MessageType getType() {
-        return MessageType.UPDATE;
-    }
 }

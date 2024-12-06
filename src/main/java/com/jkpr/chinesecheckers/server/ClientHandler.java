@@ -3,6 +3,7 @@ package com.jkpr.chinesecheckers.server;
 import java.io.*;
 import java.net.Socket;
 import com.jkpr.chinesecheckers.server.message.*;
+import java.util.UUID;
 
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -10,10 +11,15 @@ public class ClientHandler implements Runnable {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private GameSession gameSession;
+    private String playerId;
+    private boolean isInGame;
+    private ClientQueue clientQueue;
 
-    public ClientHandler(Socket clientSocket, Server server) {
+    public ClientHandler(Socket clientSocket, Server server, ClientQueue clientQueue) {
         this.clientSocket = clientSocket;
         this.server = server;
+        this.clientQueue = clientQueue;
+        this.isInGame = false;
         try{
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             out.flush();
@@ -27,6 +33,8 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try{
+            clientQueue.addClient(this);
+            System.out.println("klient dodany do kolejki. Id: " + playerId);
             while(true){
                 Message msg = (Message) in.readObject();
                 handleMessage(msg);
@@ -41,9 +49,6 @@ public class ClientHandler implements Runnable {
 
     private void handleMessage(Message msg) {
         switch (msg.getType()) {
-            case JOIN:
-                handleJoinGame((JoinGameMessage) msg);
-                break;
             case MOVE:
                 handleMove((MoveMessage) msg);
                 break;
@@ -51,12 +56,6 @@ public class ClientHandler implements Runnable {
             default:
                 System.err.println("nieznany typ wiadomosci");
         }
-    }
-
-    private void handleJoinGame(JoinGameMessage msg) {
-        int playerCount = msg.getPlayerCount();
-        gameSession = server.createGameSession(playerCount);
-        gameSession.addPlayer(this);
     }
 
     private void handleMove(MoveMessage msg) {
@@ -77,10 +76,30 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void cleanUp() {
-        server.removeClientHandler(this);
+    public String getPlayerId() {
+        if(playerId == null){
+            playerId = UUID.randomUUID().toString();
+        }
+        return playerId;
+    }
+
+    public void assignGameSession(GameSession gameSession) {
+        this.gameSession = gameSession;
+        this.isInGame = true;
+    }
+    public void closeConnection() {
         try{
             clientSocket.close();
+        } catch (IOException e) {
+            System.err.println("blad zamykania gniazda klienta");
+            e.printStackTrace();
+        }
+    }
+    private void cleanUp() {
+        try{
+            clientSocket.close();
+            clientQueue.removeClient(this);
+
         } catch (IOException e) {
             System.err.println("blad zamykania gniazda klienta");
             e.printStackTrace();

@@ -1,7 +1,11 @@
 package com.jkpr.chinesecheckers.server.message;
 
-import java.io.Serializable;
-
-public interface Message extends Serializable {
-    MessageType getType();
+public abstract class Message {
+    private MessageType type;
+    public Message(MessageType type) {
+        this.type = type;
+    }
+    public MessageType getType() {
+        return type;
+    }
 }
