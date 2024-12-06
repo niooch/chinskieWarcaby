@@ -17,9 +17,40 @@
           <source>8</source>
           <target>8</target>
         </configuration>
-      </plugin>
+    </plugin>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+                <mainClass>${main.class}</mainClass>
+            </configuration>
+        </plugin>
     </plugins>
-  </build>
+</build>
+    <profiles>
+        <!-- Profile for running the server application -->
+        <profile>
+            <id>server</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <main.class>com.jkpr.chinesecheckers.server.Server</main.class>
+            </properties>
+        </profile>
+
+        <!-- Profile for running the client application -->
+        <profile>
+            <id>client</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <main.class>com.jkpr.chinesecheckers.client.Client</main.class>
+            </properties>
+        </profile>
+    </profiles>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.plugins</groupId>
