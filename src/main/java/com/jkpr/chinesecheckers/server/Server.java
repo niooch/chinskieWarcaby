@@ -28,7 +28,7 @@ public class Server {
             serverSocket = new ServerSocket(PORT);
             System.out.println("serwer wystartowal, zaczynam sluchac na " + PORT);
             GameCreationManager creationManager = new GameCreationManager(clientQueue, this);
-            threadPool.execute(creationManager);
+            new Thread(creationManager).start();
             while(isRunning){
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("akceptuje polaczenie od " + clientSocket.getInetAddress());
