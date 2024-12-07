@@ -7,14 +7,14 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class Server {
-    private static final int PORT = 12345;
-    private ServerSocket serverSocket;
-    private List<ClientHandler> clientHandlers;
-    private ExecutorService threadPool;
-    private List<GameSession> gameSessions;
-    private ClientQueue clientQueue;
-    private volatile boolean isRunning;
-    private Scanner scanner;
+    private static final int PORT = 12345;          //port serwera
+    private ServerSocket serverSocket;              //socket serwera
+    private List<ClientHandler> clientHandlers;     //lista klientow. Serwer musi wiedziec kto jest podlaczony, aby moc usowac klientow
+    private ExecutorService threadPool;             //pula watkow do odpalania watkow dla klientow
+    private List<GameSession> gameSessions;         //lista sesji gier << dalsza implementacja
+    private ClientQueue clientQueue;                //kolejka klientow
+    private volatile boolean isRunning;             //flaga czy serwer dziala
+    private Scanner scanner;                        //skaner do wczytywania danych z konsoli
 
     public Server(){
         threadPool = Executors.newCachedThreadPool();
@@ -38,6 +38,7 @@ public class Server {
             }
             System.out.println("czekam na " + numberOfPlayers + " graczy");
             //-------------------
+            //czekaj na wejscie odpowiedniej ilosci graczy
             int connectedPlayers = 0;
             while(connectedPlayers < numberOfPlayers&& isRunning){
                 Socket clientSocket = serverSocket.accept();
@@ -49,14 +50,15 @@ public class Server {
                 threadPool.execute(handler);
                 connectedPlayers++;
             }
+            //stworz tablice dla gameSession
             ClientHandler[] players = new ClientHandler[numberOfPlayers];
             for(int i=0; i< numberOfPlayers; i++){
                 players[i] = clientQueue.takeClient();
             }
+            //odpal sesje gry
             System.out.println("wszyscy gracze dolaczyli, tworze gre");
             GameSession gameSession = new GameSession(players, this);
             addGameSession(gameSession);
-
         } catch (IOException e) {
             System.err.println("blad serwera, nie moge wystartowac na porcie " + PORT);
             e.printStackTrace();
