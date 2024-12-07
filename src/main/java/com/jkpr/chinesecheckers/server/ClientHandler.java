@@ -35,7 +35,6 @@ public class ClientHandler implements Runnable {
     public void run() {
         try{
             clientQueue.addClient(this);
-            System.out.println("klient dodany do kolejki. Id: " + playerId);
             while(true){
                 //pobranie wiadomosci od serwera
                 String jsonMessage = (String) in.readObject();
