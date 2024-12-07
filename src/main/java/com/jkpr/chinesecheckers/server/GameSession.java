@@ -8,6 +8,7 @@ public class GameSession {
     private HashMap<ClientHandler,Player> clientHandlerPlayerHashMap;
     private Game game;
     public GameSession(ClientHandler[] players,Server server){
+        game=Director.createGame(new CCBuilder(),players.length);
         clientHandlerPlayerHashMap=new HashMap<>();
 
         this.server=server;
@@ -15,9 +16,7 @@ public class GameSession {
         {
             addPlayer(clientHandler);
         }
-        int playerCount=players.length;
 
-        game=Director.createGame(new CCBuilder(),playerCount);
     }
     public void addPlayer(ClientHandler clientHandler)
     {

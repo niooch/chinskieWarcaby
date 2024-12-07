@@ -86,5 +86,9 @@ public class Game {
     public Player join(){
         return players.get(playersCount++);
     }
+    public void setPlayers(HashMap<Integer,Player> players)
+    {
+        this.players=players;
+    }
 }
 

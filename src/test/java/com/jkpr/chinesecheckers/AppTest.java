@@ -1,5 +1,8 @@
 package com.example.chinesecheckers;
 
+import com.jkpr.chinesecheckers.server.CCBuilder;
+import com.jkpr.chinesecheckers.server.Director;
+import com.jkpr.chinesecheckers.server.Game;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -33,6 +36,7 @@ public class AppTest
      */
     public void testApp()
     {
-        assertTrue( true );
+        Game game= Director.createGame(new CCBuilder(),2);
+        assertNotNull(game);
     }
 }
