@@ -14,7 +14,7 @@ public class UpdateMessage extends Message {
     }
 
     @Override
-    public String  serialize() {
+    public String serialize() {
         return getType().name() +" " + content;
     }
 

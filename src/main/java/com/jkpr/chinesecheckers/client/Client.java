@@ -4,74 +4,51 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-import com.jkpr.chinesecheckers.server.message.*;
 
 public class Client {
     private Socket socket;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
     private Scanner scanner;
-    private Boolean running;
+    private PrintWriter out;
+    private Scanner in;
 
+    public Client() {
+        try {
+            socket = new Socket("localhost", 12345);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new Scanner(socket.getInputStream());
+            scanner = new Scanner(System.in); // do czytanie wpisu z konsoli klienta
+            System.out.println("polaczono z serwerem");
+        } catch (IOException e) {
+            System.err.println("blad polaczenia z serwerem: " + e.getMessage());
+        }
+    }
     public static void main(String[] args){
         Client client = new Client();
         client.start();
     }
     public void start() {
-        try {
-            connectToServer();
-            scanner = new Scanner(System.in); // do czytanie wpisu z konsoli klienta
-            new Thread(this::recieveMessages).start();
-            handleUserInput();
-        } catch (IOException e) {
-            System.err.println("blad polacznia z serwerem: " + e.getMessage());
-        }
-    }
-
-    private void connectToServer() throws IOException {
-        socket = new Socket("localhost", 12345);
-        out = new ObjectOutputStream(socket.getOutputStream());
-        out.flush();
-        in = new ObjectInputStream(socket.getInputStream());
-        System.out.println("polaczono z serwerem");
-        running = true;
+        new Thread(this::recieveMessages).start();
+        handleUserInput();
     }
 
     private void handleUserInput () {
-        while (running) {
+        while (true) {
             System.out.println("wpisz ruch (q1,r1 q2,r2)");
             String input = scanner.nextLine().trim();
-            MoveMessage message = MoveMessage.fromContent(input);
-            try {
-                out.writeObject(message.serialize());
-                out.flush();
-            } catch (IOException e) {
-                System.err.println("blad wysylania ruchu: " + e.getMessage());
-                running = false;
-            } catch (NumberFormatException e) {
-                System.out.println("niepoprawny format ruchu");
+            if (input.isEmpty()) {
+                continue;
             }
-
+            out.println("MOVE " + input);
+            out.flush();
         }
     }
 
 
 
     private void recieveMessages() {
-        while (running) {
-            try {
-                String linia = (String) in.readObject();
-                Message message = Message.fromString(linia);
-                if(message.getType() == MessageType.UPDATE) {
-                    System.out.println("Otrzymano aktualizacje planszy");
-                    UpdateMessage update = (UpdateMessage) message;
-                    System.out.println(update.getContent());
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                System.err.println("blad odczytu wiadomosci: " + e.getMessage());
-                running = false;
-            }
-
+        while (in.hasNextLine()) {
+            String linia = in.nextLine();
+            System.out.println("odebrano: " + linia);
         }
     }
 
