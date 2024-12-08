@@ -5,7 +5,7 @@ import java.net.Socket;
 import com.jkpr.chinesecheckers.server.message.*;
 import java.util.UUID;
 import java.util.Scanner;
-
+//klasa obslugujaca klienta na serwerze
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private PrintWriter out;
@@ -15,21 +15,25 @@ public class ClientHandler implements Runnable {
 
     public ClientHandler(Socket clientSocket){
         this.clientSocket = clientSocket;
+        //tu moze byc cos innego, uzaleznic potem od gry
         this.playerId = UUID.randomUUID().toString();
     }
 
     @Override
     public void run() {
         try{
+            //inicjalizacja strumieni
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new Scanner(clientSocket.getInputStream());
             while(true){
+                //glowny loop obslugujacy wiadomosci od klienta
                 System.out.println("oczekiwanie na wiadomosc od " + playerId);
                 String linia = in.nextLine().trim();
                 if(linia.isEmpty()){
                     System.out.println("pusta wiadomosc od " + playerId);
                     continue;
                 }
+                //przepisz linie na obiekt wiadomosci
                 Message message = Message.fromString(linia);
                 if(message.getType() == MessageType.MOVE){
                     MoveMessage msg = (MoveMessage) message;
@@ -71,14 +75,7 @@ public class ClientHandler implements Runnable {
     public void assignGameSession(GameSession gameSession) {
         this.gameSession = gameSession;
     }
-    public void closeConnection() {
-        try{
-            clientSocket.close();
-        } catch (IOException e) {
-            System.err.println("blad zamykania gniazda klienta");
-            e.printStackTrace();
-        }
-    }
+    //zamkniecie handlera
     private void cleanUp() {
         try{
             clientSocket.close();

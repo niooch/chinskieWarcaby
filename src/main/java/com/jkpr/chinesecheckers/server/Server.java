@@ -17,10 +17,12 @@ public class Server {
 
     public void startServer() {
         try {
+            //stworz serwer na porcie PORT
             serverSocket = new ServerSocket(PORT);
             threadPool = Executors.newCachedThreadPool();
             System.out.println("serwer wystartowal, zaczynam sluchac na " + PORT);
-            //Tworzenie gry <-- stary kod GameCreationManager
+
+            //ile graczy?
             System.out.println("Podaj ilosc graczy: 2, 3, 4 lub 6");
             scanner = new Scanner(System.in);
             int numberOfPlayers = scanner.nextInt();
@@ -29,10 +31,9 @@ public class Server {
                 return;
             }
             System.out.println("czekam na " + numberOfPlayers + " graczy");
-            //-------------------
-            //czekaj na wejscie odpowiedniej ilosci graczy
             players = new ClientHandler[numberOfPlayers];
             int connectedPlayers = 0;
+            //czekaj na polaczenie sie odpwiedniej liczby graczy
             while(connectedPlayers < numberOfPlayers&& isRunning){
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("akceptuje polaczenie od " + clientSocket.getInetAddress());
@@ -47,11 +48,11 @@ public class Server {
             System.out.println("wszyscy gracze dolaczyli, tworze gre");
             GameSession gameSession = new GameSession(players, this);
             for (ClientHandler handler : players) {
+                //aby gracz mogl wysylac wiadomosci do innych
                 handler.assignGameSession(gameSession);
-                UpdateMessage message = new UpdateMessage("dadsa");
-                handler.sendMessage(message);
             }
             while(true){
+                //aby istnal watek serwera, potrzebny przechowywania instancji gameSession
             }
         } catch (IOException e) {
             System.err.println("blad serwera, nie moge wystartowac na porcie " + PORT);

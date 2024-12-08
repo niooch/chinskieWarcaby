@@ -3,7 +3,9 @@ package com.jkpr.chinesecheckers.server.message;
 import com.jkpr.chinesecheckers.server.Move;
 
 public class MoveMessage extends Message{
+    //dla serwera
     private final Move move;
+    //dla klienta
     private final int q1, r1, q2, r2;
     public MoveMessage(Move move){
         super(MessageType.MOVE);

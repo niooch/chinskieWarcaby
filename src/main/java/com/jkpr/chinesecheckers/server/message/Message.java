@@ -2,7 +2,7 @@ package com.jkpr.chinesecheckers.server.message;
 
 public abstract class Message {
     private final MessageType type;
-    protected Message(MessageType type) {
+    public Message(MessageType type) {
         this.type = type;
     }
     public MessageType getType() {

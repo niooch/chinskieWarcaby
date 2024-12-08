@@ -20,7 +20,6 @@ public class UpdateMessage extends Message {
 
     public static UpdateMessage fromContent(String content) {
         //TODO: zastanowci sie co trzeba wysylac
-        //do dalszego przemyslenia
         return new UpdateMessage(content);
     }
 

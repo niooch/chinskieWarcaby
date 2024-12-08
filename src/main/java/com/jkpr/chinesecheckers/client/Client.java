@@ -13,19 +13,22 @@ public class Client {
 
     public Client() {
         try {
+            //laczenie z serwerem
             socket = new Socket("localhost", 12345);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new Scanner(socket.getInputStream());
-            scanner = new Scanner(System.in); // do czytanie wpisu z konsoli klienta
+            scanner = new Scanner(System.in);
             System.out.println("polaczono z serwerem");
         } catch (IOException e) {
             System.err.println("blad polaczenia z serwerem: " + e.getMessage());
         }
     }
+
     public static void main(String[] args){
         Client client = new Client();
         client.start();
     }
+
     public void start() {
         new Thread(this::recieveMessages).start();
         handleUserInput();
@@ -42,9 +45,6 @@ public class Client {
             out.flush();
         }
     }
-
-
-
     private void recieveMessages() {
         while (in.hasNextLine()) {
             String linia = in.nextLine();
