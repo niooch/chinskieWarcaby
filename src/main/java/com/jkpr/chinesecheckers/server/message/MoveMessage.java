@@ -12,7 +12,20 @@ public class MoveMessage extends Message{
         super(MessageType.MOVE);
         this.move = new Move(q1, r1, q2, r2);
     }
+    public MoveMessage(String message)
+    {
+        super(MessageType.MOVE);
+        String[] blocks=message.split(" ");
+        String[] start=blocks[0].split(",");
+        String[] end=blocks[1].split(",");
 
+        int startX=Integer.parseInt(start[0]);
+        int startY=Integer.parseInt(start[1]);
+        int endX=Integer.parseInt(end[0]);
+        int endY=Integer.parseInt(end[1]);
+
+        move=new Move(startX,startY,endX,endY);
+    }
     public Move getMove(){
         return move;
     }

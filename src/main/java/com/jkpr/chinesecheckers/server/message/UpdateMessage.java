@@ -1,17 +1,22 @@
 package com.jkpr.chinesecheckers.server.message;
 
-import com.jkpr.chinesecheckers.server.AbstractBoard;
+import com.jkpr.chinesecheckers.server.Move;
 
 public class UpdateMessage extends Message {
-    private AbstractBoard board;
+    private int playerId;
+    private int nextPlayer;
+    private Move move;
 
-    public UpdateMessage(AbstractBoard board) {
+    public UpdateMessage(String string)
+    {
         super(MessageType.UPDATE);
-        this.board = board;
+        String[] blocks=string.split(" ");
+        playerId=Integer.parseInt(blocks[1]);
+        nextPlayer=Integer.parseInt(blocks[2]);
+        int startX=Integer.parseInt(blocks[3]);
+        int startY=Integer.parseInt(blocks[4]);
+        int endX=Integer.parseInt(blocks[5]);
+        int endY=Integer.parseInt(blocks[6]);
+        move=new Move(startX,startY,endX,endY);
     }
-
-    public AbstractBoard getBoard() {
-        return board;
-    }
-
 }

@@ -3,49 +3,46 @@ package com.jkpr.chinesecheckers.server;
 import java.io.*;
 import java.net.Socket;
 import com.jkpr.chinesecheckers.server.message.*;
+
+import java.util.Scanner;
 import java.util.UUID;
 import com.google.gson.Gson;
 
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
-    private Server server;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private PrintWriter out;
+    private Scanner in;
     private GameSession gameSession;
     private String playerId;
-    private boolean isInGame;
-    private ClientQueue clientQueue;
 
-    public ClientHandler(Socket clientSocket, Server server, ClientQueue clientQueue) {
+    public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.server = server;
-        this.clientQueue = clientQueue;
-        this.isInGame = false;
-        try{
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            System.err.println("blad iniclaizacji strumieni");
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void run() {
         try{
-            clientQueue.addClient(this);
+            out = new PrintWriter(clientSocket.getOutputStream(),true);
+            out.println("WAIT");
+            in = new Scanner(clientSocket.getInputStream());
+
+            //TODO w zasadzie to nie wiem jak to zrobić żeby wszyskie wątki mogły swobodnie się słuchać
+            //główny while serwera-według mnie przynajmniej
             while(true){
-                //pobranie wiadomosci od serwera
-                String jsonMessage = (String) in.readObject();
-                Message msg =new Gson().fromJson(jsonMessage, Message.class);
-                handleMessage(msg);
+                try {
+                    System.out.println("słucham");
+                    //pobranie wiadomosci od klienta
+                    String message = in.nextLine();
+                    System.out.println(message);
+                    //TODO tutaj będzie włączana logika gry i przetwarzany ruch, na razie wiadomość jest po prostu zwracana
+                    Message msg = new MoveMessage(message);
+                    //handleMessage(msg);
+                    out.println(message + "returned");
+                }catch(Exception e){}
             }
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("blad odczytu wiadomosci");
+        } catch (IOException e) {
+            System.err.println("blad iniclaizacji strumieni");
             e.printStackTrace();
-        } finally {
-            cleanUp();
         }
     }
 
@@ -70,14 +67,9 @@ public class ClientHandler implements Runnable {
 
 
     private void sendMessage(Message msg) {
-        try{
-            String jsonMessage = new Gson().toJson(msg);
-            out.writeObject(jsonMessage);
-            out.flush();
-        } catch (IOException e) {
-            System.err.println("blad wysylania wiadomosci do klienta");
-            e.printStackTrace();
-        }
+        String jsonMessage = new Gson().toJson(msg);
+        out.println(jsonMessage);
+        out.flush();
     }
 
     public String getPlayerId() {
@@ -87,23 +79,9 @@ public class ClientHandler implements Runnable {
         return playerId;
     }
 
-    public void assignGameSession(GameSession gameSession) {
-        this.gameSession = gameSession;
-        this.isInGame = true;
-    }
     public void closeConnection() {
         try{
             clientSocket.close();
-        } catch (IOException e) {
-            System.err.println("blad zamykania gniazda klienta");
-            e.printStackTrace();
-        }
-    }
-    private void cleanUp() {
-        try{
-            clientSocket.close();
-            clientQueue.removeClient(this);
-
         } catch (IOException e) {
             System.err.println("blad zamykania gniazda klienta");
             e.printStackTrace();

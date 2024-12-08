@@ -9,18 +9,13 @@ import java.util.concurrent.*;
 public class Server {
     private static final int PORT = 12345;          //port serwera
     private ServerSocket serverSocket;              //socket serwera
-    private List<ClientHandler> clientHandlers;     //lista klientow. Serwer musi wiedziec kto jest podlaczony, aby moc usowac klientow
     private ExecutorService threadPool;             //pula watkow do odpalania watkow dla klientow
-    private List<GameSession> gameSessions;         //lista sesji gier << dalsza implementacja
-    private ClientQueue clientQueue;                //kolejka klientow
     private volatile boolean isRunning;             //flaga czy serwer dziala
     private Scanner scanner;                        //skaner do wczytywania danych z konsoli
+    private ClientHandler[] players;
 
     public Server(){
         threadPool = Executors.newCachedThreadPool();
-        clientQueue = new ClientQueue();
-        gameSessions = Collections.synchronizedList(new ArrayList<>());
-        clientHandlers = Collections.synchronizedList(new ArrayList<>());
         isRunning = true;
         scanner = new Scanner(System.in);
     }
@@ -32,6 +27,7 @@ public class Server {
             //Tworzenie gry <-- stary kod GameCreationManager
             System.out.println("Podaj ilosc graczy: 2, 3, 4 lub 6");
             int numberOfPlayers = scanner.nextInt();
+            scanner.close();
             if(numberOfPlayers <2 || numberOfPlayers > 6|| numberOfPlayers == 5){
                 System.out.println("Niepoprawna liczba graczy");
                 shutdown();
@@ -40,41 +36,28 @@ public class Server {
             //-------------------
             //czekaj na wejscie odpowiedniej ilosci graczy
             int connectedPlayers = 0;
+
+            players = new ClientHandler[numberOfPlayers];
             while(connectedPlayers < numberOfPlayers&& isRunning){
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("akceptuje polaczenie od " + clientSocket.getInetAddress());
 
-                ClientHandler handler = new ClientHandler(clientSocket, this, clientQueue);
+                ClientHandler handler = new ClientHandler(clientSocket);
+                players[connectedPlayers]=handler;
                 System.out.println("dodaje gracza " +  handler.getPlayerId() + "do kolejki");
-                clientHandlers.add(handler);
                 threadPool.execute(handler);
                 connectedPlayers++;
-            }
-            //stworz tablice dla gameSession
-            ClientHandler[] players = new ClientHandler[numberOfPlayers];
-            for(int i=0; i< numberOfPlayers; i++){
-                players[i] = clientQueue.takeClient();
             }
             //odpal sesje gry
             System.out.println("wszyscy gracze dolaczyli, tworze gre");
             GameSession gameSession = new GameSession(players, this);
-            addGameSession(gameSession);
         } catch (IOException e) {
             System.err.println("blad serwera, nie moge wystartowac na porcie " + PORT);
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             shutdown();
         }
     }
-    public synchronized void addGameSession(GameSession gameSession){
-        gameSessions.add(gameSession);
-    }
-    public synchronized void removeClientHandler(ClientHandler clientHandler){
-        clientHandlers.remove(clientHandler);
-    }
-
     public void shutdown(){
         isRunning = false;
         try {
@@ -82,7 +65,7 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(ClientHandler handler : clientHandlers){
+        for(ClientHandler handler : players){
             handler.closeConnection();
         }
         threadPool.shutdownNow();
