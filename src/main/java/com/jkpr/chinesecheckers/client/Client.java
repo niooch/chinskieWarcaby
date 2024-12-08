@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-import com.jkpr.chinesecheckers.server.AbstractBoard;
 import com.jkpr.chinesecheckers.server.message.*;
 
 public class Client {
@@ -21,6 +20,7 @@ public class Client {
     public void start() {
         try {
             connectToServer();
+            scanner = new Scanner(System.in); // do czytanie wpisu z konsoli klienta
             new Thread(this::recieveMessages).start();
             handleUserInput();
         } catch (IOException e) {
@@ -33,35 +33,21 @@ public class Client {
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
         in = new ObjectInputStream(socket.getInputStream());
-        scanner = new Scanner(System.in);
         System.out.println("polaczono z serwerem");
         running = true;
     }
 
     private void handleUserInput () {
         while (running) {
-            System.out.println("wpisz ruch (q1,r1 q2,r2) lub 'exit' aby zakonczyc");
-            String input = scanner.nextLine();
-            if (input == "exit") {
-                System.out.println("koncze dzialanie");
-                running = false;
-                closeConnection();
-                break;
-            }
-            String[] parts = input.split(" ");
-            if (parts.length != 2) {
-                System.out.println("niepoprawny format ruchu");
-                continue;
-            }
-            String[] from = parts[0].split(",");
-            String[] to = parts[1].split(",");
-            if (from.length != 2 || to.length != 2) {
-                System.out.println("niepoprawny format ruchu");
-                continue;
-            }
+            System.out.println("wpisz ruch (q1,r1 q2,r2)");
+            String input = scanner.nextLine().trim();
+            MoveMessage message = MoveMessage.fromContent(input);
             try {
-                MoveMessage move = new MoveMessage(Integer.parseInt(from[0]), Integer.parseInt(from[1]), Integer.parseInt(to[0]), Integer.parseInt(to[1]));
-                sendMessage(move);
+                out.writeObject(message.serialize());
+                out.flush();
+            } catch (IOException e) {
+                System.err.println("blad wysylania ruchu: " + e.getMessage());
+                running = false;
             } catch (NumberFormatException e) {
                 System.out.println("niepoprawny format ruchu");
             }
@@ -70,68 +56,23 @@ public class Client {
     }
 
 
-    private void sendMessage (Message message){
-        try {
-            out.writeObject(message);
-            out.flush();
-        } catch (IOException e) {
-            System.err.println("blad wysylania wiadomosci: " + e.getMessage());
-            running = false;
-            closeConnection();
-        }
-    }
 
     private void recieveMessages() {
         while (running) {
             try {
-                Message message = (Message) in.readObject();
-                processMessage(message);
-            } catch (IOException e) {
-                System.err.println("polaczenie z serwerem zerwane: " + e.getMessage());
+                String linia = (String) in.readObject();
+                Message message = Message.fromString(linia);
+                if(message.getType() == MessageType.UPDATE) {
+                    System.out.println("Otrzymano aktualizacje planszy");
+                    UpdateMessage update = (UpdateMessage) message;
+                    System.out.println(update.getContent());
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("blad odczytu wiadomosci: " + e.getMessage());
                 running = false;
-                closeConnection();
-            } catch (ClassNotFoundException e) {
-                System.err.println("nieznany typ wiadomosci: " + e.getMessage());
             }
+
         }
     }
 
-    private void processMessage (Message message){
-        switch (message.getType()) {
-            case START_GAME:
-                System.out.println("gra sie rozpoczyna");
-                break;
-            case UPDATE:
-                UpdateMessage update = (UpdateMessage) message;
-                displayBoard(update.getBoard());
-                break;
-            case ERROR:
-                ErrorMessage error = (ErrorMessage) message;
-                System.out.println("blad: " + error.getError());
-                break;
-            default:
-                System.out.println("nieznany typ wiadomosci" + message.getType());
-                break;
-        }
-    }
-
-    private void displayBoard (AbstractBoard board){
-        System.out.println(board.toString());
-    }
-
-    private void closeConnection () {
-        try {
-            if (socket != null) {
-                socket.close();
-            }
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.close();
-            }
-        } catch (IOException e) {
-            System.err.println("blad zamykania polaczenia: " + e.getMessage());
-        }
-    }
 }

@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import com.jkpr.chinesecheckers.server.message.*;
 import java.util.UUID;
-import com.google.gson.Gson;
 
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -21,6 +20,7 @@ public class ClientHandler implements Runnable {
         this.server = server;
         this.clientQueue = clientQueue;
         this.isInGame = false;
+        this.gameSession = gameSession;
         try{
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             out.flush();
@@ -36,10 +36,14 @@ public class ClientHandler implements Runnable {
         try{
             clientQueue.addClient(this);
             while(true){
-                //pobranie wiadomosci od serwera
-                String jsonMessage = (String) in.readObject();
-                Message msg =new Gson().fromJson(jsonMessage, Message.class);
-                handleMessage(msg);
+                String linia = (String) in.readObject();
+                Message message = Message.fromString(linia);
+                if(message.getType() == MessageType.MOVE){
+                    handleMoveMessage((MoveMessage) message);
+                }
+                else{
+                    System.out.println("nieznany typ wiadomosci");
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("blad odczytu wiadomosci");
@@ -48,34 +52,17 @@ public class ClientHandler implements Runnable {
             cleanUp();
         }
     }
-
-    private void handleMessage(Message msg) {
-        switch (msg.getType()) {
-            case MOVE:
-                handleMove((MoveMessage) msg);
-                break;
-                //tutaj obsluga innych typow wiadomosci
-            default:
-                System.err.println("nieznany typ wiadomosci");
-        }
+    private void handleMoveMessage(MoveMessage message) {
+        System.out.println("odebrano wiadomosc MOVE od " + playerId + ": " + message.serialize());
+        gameSession.brodcastMessage(message, this);
     }
 
-    private void handleMove(MoveMessage msg) {
-        if(gameSession != null){
-            gameSession.processMove(msg.getMove(), this);
-        } else {
-            sendMessage(new ErrorMessage("nie jestes w zadnej grze!"));
-        }
-    }
-
-
-    private void sendMessage(Message msg) {
+    public void sendMessage(Message message) {
         try{
-            String jsonMessage = new Gson().toJson(msg);
-            out.writeObject(jsonMessage);
+            out.writeObject(message.serialize());
             out.flush();
         } catch (IOException e) {
-            System.err.println("blad wysylania wiadomosci do klienta");
+            System.err.println("blad wysylania wiadomosci");
             e.printStackTrace();
         }
     }

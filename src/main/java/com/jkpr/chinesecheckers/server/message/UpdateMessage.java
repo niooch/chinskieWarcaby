@@ -1,17 +1,27 @@
 package com.jkpr.chinesecheckers.server.message;
 
-import com.jkpr.chinesecheckers.server.AbstractBoard;
 
 public class UpdateMessage extends Message {
-    private AbstractBoard board;
+    public final String content;
 
-    public UpdateMessage(AbstractBoard board) {
+    public UpdateMessage(String content) {
         super(MessageType.UPDATE);
-        this.board = board;
+        this.content = content;
     }
 
-    public AbstractBoard getBoard() {
-        return board;
+    public String getContent() {
+        return content;
+    }
+
+    @Override
+    public String  serialize() {
+        return getType().name() +" " + content;
+    }
+
+    public static UpdateMessage fromContent(String content) {
+        //TODO: zastanowci sie co trzeba wysylac
+        //do dalszego przemyslenia
+        return new UpdateMessage(content);
     }
 
 }
