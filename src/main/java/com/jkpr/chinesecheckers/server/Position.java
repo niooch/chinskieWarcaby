@@ -75,4 +75,14 @@ public class Position {
         Position position = (Position) obj;
         return x == position.x && y == position.y;
     }
+
+    /**
+     * na potrzeby wiadomosci
+     */
+    public int getX() {
+        return x;
+    }
+    public int getY() {
+        return y;
+    }
 }

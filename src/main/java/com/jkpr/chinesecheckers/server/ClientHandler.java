@@ -4,42 +4,53 @@ import java.io.*;
 import java.net.Socket;
 import com.jkpr.chinesecheckers.server.message.*;
 import java.util.UUID;
-
+import java.util.Scanner;
+//klasa obslugujaca klienta na serwerze
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
-    private Server server;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private PrintWriter out;
+    private Scanner in;
     private GameSession gameSession;
     private String playerId;
-    private boolean isInGame;
-    private ClientQueue clientQueue;
 
-    public ClientHandler(Socket clientSocket, Server server, ClientQueue clientQueue) {
+    public ClientHandler(Socket clientSocket){
         this.clientSocket = clientSocket;
-        this.server = server;
-        this.clientQueue = clientQueue;
-        this.isInGame = false;
-        try{
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            System.err.println("blad iniclaizacji strumieni");
-            e.printStackTrace();
-        }
+        //tu moze byc cos innego, uzaleznic potem od gry
+        this.playerId = UUID.randomUUID().toString();
     }
 
     @Override
     public void run() {
         try{
-            clientQueue.addClient(this);
-            System.out.println("klient dodany do kolejki. Id: " + playerId);
+            //inicjalizacja strumieni
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            in = new Scanner(clientSocket.getInputStream());
             while(true){
-                Message msg = (Message) in.readObject();
-                handleMessage(msg);
+                //glowny loop obslugujacy wiadomosci od klienta
+                System.out.println("oczekiwanie na wiadomosc od " + playerId);
+                String linia = in.nextLine().trim();
+                if(linia.isEmpty()){
+                    System.out.println("pusta wiadomosc od " + playerId);
+                    continue;
+                }
+                //przepisz linie na obiekt wiadomosci
+                Message message = Message.fromString(linia);
+                if(message.getType() == MessageType.MOVE){
+                    MoveMessage msg = (MoveMessage) message;
+                    System.out.println("odebrano wiadomosc MOVE od " + playerId + ": " + msg.serialize());
+                    //wyslij wiadomosc do wszystkich graczy
+                    if(gameSession == null){
+                        System.out.println("gracz nie jest przypisany do sesji gry");
+                        continue;
+                    } else {
+                        gameSession.brodcastMessage(msg, this);
+                    }
+                }
+                else{
+                    System.out.println("nieznany typ wiadomosci");
+                }
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e){
             System.err.println("blad odczytu wiadomosci");
             e.printStackTrace();
         } finally {
@@ -47,59 +58,27 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void handleMessage(Message msg) {
-        switch (msg.getType()) {
-            case MOVE:
-                handleMove((MoveMessage) msg);
-                break;
-            // tutaj ida inne typy wiadomosci
-            default:
-                System.err.println("nieznany typ wiadomosci");
-        }
-    }
-
-    private void handleMove(MoveMessage msg) {
-        if(gameSession != null){
-            gameSession.processMove(msg.getMove(), this);
-        } else {
-            sendMessage(new ErrorMessage("nie jestes w zadnej grze!"));
-        }
-    }
-
-    private void sendMessage(Message msg) {
+    public void sendMessage(Message message) {
         try{
-            out.writeObject(msg);
+            out.println(message.serialize());
             out.flush();
-        } catch (IOException e) {
-            System.err.println("blad wysylania wiadomosci do klienta");
+        } catch (Exception e) {
+            System.err.println("blad wysylania wiadomosci");
             e.printStackTrace();
         }
     }
 
     public String getPlayerId() {
-        if(playerId == null){
-            playerId = UUID.randomUUID().toString();
-        }
         return playerId;
     }
 
     public void assignGameSession(GameSession gameSession) {
         this.gameSession = gameSession;
-        this.isInGame = true;
     }
-    public void closeConnection() {
-        try{
-            clientSocket.close();
-        } catch (IOException e) {
-            System.err.println("blad zamykania gniazda klienta");
-            e.printStackTrace();
-        }
-    }
+    //zamkniecie handlera
     private void cleanUp() {
         try{
             clientSocket.close();
-            clientQueue.removeClient(this);
-
         } catch (IOException e) {
             System.err.println("blad zamykania gniazda klienta");
             e.printStackTrace();

@@ -10,8 +10,6 @@ import java.util.HashMap;
  * returning a fully constructed {@code Game} object specifically for Chinese checkers.
  * </p>
  */
-//TODO trochę zbędne się to wydaje jeżeli byśmy wywalili jeszcze indywidualnego playera. pomyślę jak to
-// zrobić żeby miało to więcej sensu
 public class CCBuilder implements GameBuilder {
 
     /** The game instance being constructed. */
@@ -38,7 +36,34 @@ public class CCBuilder implements GameBuilder {
     @Override
     public void setPlayers(int count) {
         game.setMaxPlayers(count);
-        game.setPlayer(new HashMap<Integer, Player>());
+        HashMap<Integer,Player> hashMap=new HashMap<Integer, Player>();
+        switch(count)
+        {
+            case 2:
+                hashMap.put(1,new Player(1));
+                hashMap.put(2,new Player(2));
+                break;
+            case 3:
+                hashMap.put(1,new Player(1));
+                hashMap.put(3,new Player(3));
+                hashMap.put(5,new Player(5));
+                break;
+            case 4:
+                hashMap.put(1,new Player(1));
+                hashMap.put(2,new Player(2));
+                hashMap.put(3,new Player(3));
+                hashMap.put(4,new Player(4));
+                break;
+            case 6:
+                hashMap.put(1,new Player(1));
+                hashMap.put(2,new Player(2));
+                hashMap.put(3,new Player(3));
+                hashMap.put(4,new Player(4));
+                hashMap.put(5,new Player(5));
+                hashMap.put(0,new Player(0));
+                break;
+        }
+        game.setPlayer(hashMap);
     }
     @Override
     public void setRules(){game.setRules(new CCRules());}
