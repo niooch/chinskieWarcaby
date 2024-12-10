@@ -25,7 +25,6 @@ public class Game {
     //TODO dodawać graczy do tej hashmapy
     // wydaje mi się że lepiej będzie to zrobić zaraz przy inicjacji game, a potem przypisywać tylko kolejnym
     // klientom obiekty
-    private HashMap<Integer, Player> players;
     private int playersCount=0;
     private int maxPlayers;
 
@@ -55,7 +54,6 @@ public class Game {
         // Dalej trzeba będzie zmienić stan graczy, ale tego jeszcze nie zaimplementowałem
         // I na koniec zostaje już tylko sformułować wnioski i to raczej tyle jeśli chodzi o logikę gry
     }
-    public void setMaxPlayers(int maxPlayers){this.maxPlayers=maxPlayers;}
 
     /**
      * Sets the game board.
@@ -77,18 +75,10 @@ public class Game {
      * and {@code AbstractPlayer} objects as values, representing all players participating in the game.
      * </p>
      *
-     * @param players the {@code HashMap} containing players, keyed by their ID
      */
-    public void setPlayer(HashMap<Integer, Player> players) {
-        this.players = players;
-    }
     public void setRules(AbstractRules rules){this.rules=rules;}
     public Player join(){
-        return players.get(playersCount++);
-    }
-    public void setPlayers(HashMap<Integer,Player> players)
-    {
-        this.players=players;
+        return board.getPlayers().get(playersCount++);
     }
 }
 

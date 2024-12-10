@@ -21,7 +21,11 @@ public abstract class AbstractBoard {
     /** A list of valid movement directions from any given position. */
     protected List<Position> movements = new ArrayList<>();
 
+    protected List<Player> players=new ArrayList<Player>();
+
+    public List<Player> getPlayers(){return players;}
     public Map<Position, Cell> getCells(){return cells;}
     public List<Position> getMovements(){return movements;}
     public abstract String toString();
+
 }

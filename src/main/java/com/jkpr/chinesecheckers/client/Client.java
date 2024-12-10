@@ -14,7 +14,7 @@ public class Client {
     public Client() {
         try {
             //laczenie z serwerem
-            socket = new Socket("localhost", 12345);
+            socket = new Socket("79.189.125.171", 1001);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new Scanner(socket.getInputStream());
             scanner = new Scanner(System.in);

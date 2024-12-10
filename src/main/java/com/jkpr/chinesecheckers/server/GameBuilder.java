@@ -16,16 +16,8 @@ public interface GameBuilder {
      * It should define how the board is arranged, including any starting positions or special settings.
      * </p>
      */
-    void setBoard();
+    void setBoard(int count);
 
-    /**
-     * Sets up the players for the game.
-     * <p>
-     * This method should configure the players, including initializing player objects, assigning roles,
-     * and determining player order or teams.
-     * </p>
-     */
-    void setPlayers(int count);
     void setRules();
 
     /**

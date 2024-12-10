@@ -35,7 +35,10 @@ public class Cell {
         this.position = position;
         this.owners = owners;
     }
-
+    public void setPiece(Piece piece)
+    {
+        this.piece=piece;
+    }
     /**
      * Returns the list of players who own this cell.
      * <p>

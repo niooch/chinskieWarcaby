@@ -20,8 +20,7 @@ public class Director {
      * @return the fully constructed {@code Game}
      */
     public static Game createGame(GameBuilder builder,int playerCount) {
-        builder.setBoard();
-        builder.setPlayers(playerCount);
+        builder.setBoard(playerCount);
         builder.setRules();
         return builder.getGame();
     }

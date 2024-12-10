@@ -12,7 +12,7 @@ import java.util.List;
  * </p>
  */
 public class CCBoard extends AbstractBoard {
-
+    private Player[] playerDistribution=new Player[6];
     /**
      * Constructs a {@code CCBoard} with the appropriate layout and initial state.
      * <p>
@@ -20,7 +20,23 @@ public class CCBoard extends AbstractBoard {
      * board coordinates. It also assigns owners to each cell according to the rules of the game.
      * </p>
      */
-    CCBoard() {
+    public CCBoard(int count) {
+        //setting players
+        for(int i=0;i<count;i++)
+            players.add(new Player(i));
+        //distribution player array
+        for(double i=0;i<6;i++)
+        {
+            double value=i*(double)count/6;
+            if(Math.floor(value)==value)
+            {
+                playerDistribution[(int)i]=players.get((int)value);
+            }
+            else
+            {
+                playerDistribution[(int)i]=null;
+            }
+        }
         // Movement possibilities
         movements.add(new Position(-1, 0));
         movements.add(new Position(1, 0));
@@ -51,6 +67,7 @@ public class CCBoard extends AbstractBoard {
                 Position pos = new Position(x, y);
                 if (!cells.containsKey(pos)) {
                     Cell cell = new Cell(pos, getOwners(x, y));
+                    cell.setPiece(getPiece(x,y));
                     cells.put(pos, cell);
                 }
                 x--;
@@ -69,36 +86,69 @@ public class CCBoard extends AbstractBoard {
      * @param y the y-coordinate of the cell
      * @return the list of {@code AbstractPlayer}s who own the cell at the given coordinates
      */
-    //TODO trzeba jakoś wytrzasnąć instancje graczy przy tworzeniu
-    // planszy żeby można było ustawić właścicieli pól. wtedy np po id wyciągałoby się instancje gracza
-    // z hash mapy czy coś
-
-    //TODO tak btw to żeby tu można było użyć List.of() to trzeba chyba dopisać wersję javy do pom.xml
-    // a wtedy ładniej by to wyglądało (daje mi błąd że List.of jest od javy 9)
     private List<Player> getOwners(int x, int y) {
-        ArrayList<Player> list = new ArrayList<>();
+        List<Player> list;
         if (y < -4 || y > 4) {
-            list.add(new Player(0));
-            list.add(new Player(1));
-            return list;
+            list=List.of(playerDistribution[0],playerDistribution[3]);
         }
-        if (x < -4 || x > 4) {
-            list.add(new Player(2));
-            list.add(new Player(3));
-            return list;
+        else if (x < -4 || x > 4) {
+            list=List.of(playerDistribution[1],playerDistribution[4]);
         }
-        if (x + y <= -5 || x + y >= 5) {
-            list.add(new Player(4));
-            list.add(new Player(5));
-            return list;
+        else if (x + y <= -5 || x + y >= 5) {
+            list=List.of(playerDistribution[2],playerDistribution[5]);
         } else {
-            list.add(new Player(3));
-            list.add(new Player(0));
-            list.add(new Player(4));
-            list.add(new Player(1));
-            list.add(new Player(2));
-            list.add(new Player(5));
-            return list;
+            list=List.of(playerDistribution[0],playerDistribution[3],
+                    playerDistribution[1],playerDistribution[4],
+                    playerDistribution[2],playerDistribution[5]);
+        }
+        return list;
+    }
+
+    private Piece getPiece(int x, int y) {
+        if (y < -4) {
+            Player player=playerDistribution[0];
+            if(player==null)
+                return null;
+            else
+                return new Piece(player);
+        }
+        else if (y > 4) {
+            Player player=playerDistribution[3];
+            if(player==null)
+                return null;
+            else
+                return new Piece(player);
+        }
+        else if (x < -4) {
+            Player player=playerDistribution[1];
+            if(player==null)
+                return null;
+            else
+                return new Piece(player);
+        }
+        else if (x > 4) {
+            Player player=playerDistribution[4];
+            if(player==null)
+                return null;
+            else
+                return new Piece(player);
+        }
+        else if ( x + y >= 5) {
+            Player player=playerDistribution[2];
+            if(player==null)
+                return null;
+            else
+                return new Piece(player);
+        }
+        else if (x + y <= -5) {
+            Player player=playerDistribution[5];
+            if(player==null)
+                return null;
+            else
+                return new Piece(player);
+        }
+        else {
+            return null;
         }
     }
 

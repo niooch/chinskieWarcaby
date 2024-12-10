@@ -22,49 +22,10 @@ public class CCBuilder implements GameBuilder {
      * </p>
      */
     @Override
-    public void setBoard() {
-        game.setBoard(new CCBoard());
+    public void setBoard(int count) {
+        game.setBoard(new CCBoard(count));
     }
 
-    /**
-     * Sets up the players for a Chinese checkers game.
-     * <p>
-     * This method initializes a {@code HashMap} to hold the players of the game. Currently, it creates an
-     * empty map, but in a complete implementation, it would populate the map with instances of {@code CCPlayer}.
-     * </p>
-     */
-    @Override
-    public void setPlayers(int count) {
-        game.setMaxPlayers(count);
-        HashMap<Integer,Player> hashMap=new HashMap<Integer, Player>();
-        switch(count)
-        {
-            case 2:
-                hashMap.put(1,new Player(1));
-                hashMap.put(2,new Player(2));
-                break;
-            case 3:
-                hashMap.put(1,new Player(1));
-                hashMap.put(3,new Player(3));
-                hashMap.put(5,new Player(5));
-                break;
-            case 4:
-                hashMap.put(1,new Player(1));
-                hashMap.put(2,new Player(2));
-                hashMap.put(3,new Player(3));
-                hashMap.put(4,new Player(4));
-                break;
-            case 6:
-                hashMap.put(1,new Player(1));
-                hashMap.put(2,new Player(2));
-                hashMap.put(3,new Player(3));
-                hashMap.put(4,new Player(4));
-                hashMap.put(5,new Player(5));
-                hashMap.put(0,new Player(0));
-                break;
-        }
-        game.setPlayer(hashMap);
-    }
     @Override
     public void setRules(){game.setRules(new CCRules());}
 
