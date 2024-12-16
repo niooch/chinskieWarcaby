@@ -27,5 +27,6 @@ public abstract class AbstractBoard {
     public Map<Position, Cell> getCells(){return cells;}
     public List<Position> getMovements(){return movements;}
     public abstract String toString();
+    public abstract void makeMove(Position start,Position end);
 
 }

@@ -17,4 +17,9 @@ public class Move {
     public Position getStart() {
         return start;
     }
+    @Override
+    public String toString()
+    {
+        return start.toString()+" "+end.toString();
+    }
 }

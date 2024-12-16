@@ -19,6 +19,11 @@ public class ClientHandler implements Runnable {
         this.playerId = UUID.randomUUID().toString();
     }
 
+    public void setGameSession(GameSession gameSession)
+    {
+        this.gameSession=gameSession;
+    }
+
     @Override
     public void run() {
         try{
@@ -43,7 +48,7 @@ public class ClientHandler implements Runnable {
                         System.out.println("gracz nie jest przypisany do sesji gry");
                         continue;
                     } else {
-                        gameSession.brodcastMessage(msg, this);
+                        gameSession.processMove(msg, this);
                     }
                 }
                 else{

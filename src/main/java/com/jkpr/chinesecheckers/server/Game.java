@@ -1,5 +1,9 @@
 package com.jkpr.chinesecheckers.server;
 
+import com.jkpr.chinesecheckers.server.message.Message;
+import com.jkpr.chinesecheckers.server.message.MoveMessage;
+import com.jkpr.chinesecheckers.server.message.UpdateMessage;
+
 import java.util.HashMap;
 
 /**
@@ -43,11 +47,26 @@ public class Game {
      * <p><b>Note:</b> The player is assumed to be the one currently active in the game.</p>
      *
      */
-    public void nextMove(Move move,Player player) {
-        //TODO dodać zparsowane dane do obróbki przez funkcję "isValidMove" (gracz niekonieczie musi tu być
-        // będzie można wyjąć go jako będącego w stanie active
-
-        rules.isValidMove(board,player,move.getStart(),move.getEnd());
+    public UpdateMessage nextMove(MoveMessage message, Player player) {
+        if(message.getSkip())
+        {
+            //player next
+            return UpdateMessage.fromContent("SKIP");
+        }
+        Move move=message.getMove();
+        boolean validation=rules.isValidMove(board,player,move.getStart(),move.getEnd());
+        if(validation)
+        {
+            board.makeMove(move.getStart(),move.getEnd());
+            //player next
+            //return win winPlayer startPos endPos nextPlayer
+            //TODO jakoś tak to będzie zobaczy się później
+            return UpdateMessage.fromContent(move+" tutaj_nextPlayer tutaj_czy_win tutaj_kto_win");
+        }
+        else
+        {
+            return UpdateMessage.fromContent("FAIL");
+        }
         //TODO tak naprawdę kolejnym krokiem tutaj będzie coś w stylu board.move albo player.move
         // (chyba to drugie lepsze) jakoś muszę jeszcze rozwiązać problem instancji pionków i tego kto i gdzie
         // ma mieć do nich dostęp.

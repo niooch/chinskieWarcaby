@@ -171,5 +171,11 @@ public class CCBoard extends AbstractBoard {
         }
         return s;
     }
+
+    @Override
+    public void makeMove(Position start, Position end) {
+        cells.get(end).setPiece(cells.get(start).getPiece());
+        cells.get(start).setPiece(null);
+    }
 }
 

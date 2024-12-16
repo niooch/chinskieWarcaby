@@ -7,6 +7,7 @@ public class MoveMessage extends Message{
     private final Move move;
     //dla klienta
     private final int q1, r1, q2, r2;
+    private boolean skip;
     public MoveMessage(Move move){
         super(MessageType.MOVE);
         this.move = move;
@@ -47,5 +48,9 @@ public class MoveMessage extends Message{
     }
     public Move getMove(){
         return move;
+    }
+    public boolean getSkip()
+    {
+        return skip;
     }
 }
