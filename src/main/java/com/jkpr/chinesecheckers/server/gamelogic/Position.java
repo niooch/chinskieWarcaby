@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
 import java.util.Objects;
 

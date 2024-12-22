@@ -1,5 +1,7 @@
 package com.jkpr.chinesecheckers.server;
 
+import com.jkpr.chinesecheckers.server.gamelogic.Game;
+
 /**
  * The {@code Director} class is responsible for orchestrating the construction of a game using a {@code GameBuilder}.
  * <p>
@@ -19,7 +21,7 @@ public class Director {
      * @param builder the {@code GameBuilder} used to create the game
      * @return the fully constructed {@code Game}
      */
-    public static Game createGame(GameBuilder builder,int playerCount) {
+    public static Game createGame(GameBuilder builder, int playerCount) {
         builder.setBoard(playerCount);
         builder.setRules();
         return builder.getGame();

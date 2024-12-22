@@ -1,6 +1,6 @@
 package com.jkpr.chinesecheckers.server.message;
 
-import com.jkpr.chinesecheckers.server.Move;
+import com.jkpr.chinesecheckers.server.gamelogic.Move;
 
 public class MoveMessage extends Message{
     //dla serwera

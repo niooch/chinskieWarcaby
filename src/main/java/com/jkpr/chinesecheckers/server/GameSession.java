@@ -1,12 +1,16 @@
 package com.jkpr.chinesecheckers.server;
 
 import java.util.*;
+
+import com.jkpr.chinesecheckers.server.gamelogic.CCBuilder;
+import com.jkpr.chinesecheckers.server.gamelogic.Game;
+import com.jkpr.chinesecheckers.server.gamelogic.Player;
 import com.jkpr.chinesecheckers.server.message.*;
 
 public class GameSession {
     private Server server;
     private List<ClientHandler> clients = new ArrayList<>();
-    private HashMap<ClientHandler,Player> clientHandlerPlayerHashMap;
+    private HashMap<ClientHandler, Player> clientHandlerPlayerHashMap;
     private Game game;
     public GameSession(ClientHandler[] players,Server server){
         game=Director.createGame(new CCBuilder(),players.length);

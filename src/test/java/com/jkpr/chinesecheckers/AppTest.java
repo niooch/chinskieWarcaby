@@ -1,8 +1,8 @@
 package com.example.chinesecheckers;
 
-import com.jkpr.chinesecheckers.server.CCBuilder;
+import com.jkpr.chinesecheckers.server.gamelogic.CCBuilder;
 import com.jkpr.chinesecheckers.server.Director;
-import com.jkpr.chinesecheckers.server.Game;
+import com.jkpr.chinesecheckers.server.gamelogic.Game;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

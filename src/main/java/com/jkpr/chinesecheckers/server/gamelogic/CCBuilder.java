@@ -1,6 +1,6 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
-import java.util.HashMap;
+import com.jkpr.chinesecheckers.server.GameBuilder;
 
 /**
  * The {@code CCBuilder} class is a concrete implementation of the {@code GameBuilder} interface

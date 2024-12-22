@@ -1,4 +1,8 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
+
+import com.jkpr.chinesecheckers.server.states.PlayerBehavior;
+import com.jkpr.chinesecheckers.server.states.PlayerState;
+import com.jkpr.chinesecheckers.server.states.WaitState;
 
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +19,7 @@ public class Player {
 
     /** The unique identifier for the player. */
     private int id;
+    private PlayerBehavior playerBehavior=new WaitState();
     //TODO tutaj piece jest nawet spoko ale trzebaby było ogarnąć to tak żeby piece miało dokładnie
     // te same obiekty position i piece co gdzie indziej - generalnie jeszcze do przemyślenia
     // wtedy trzebabyłoby je trworzyć już przy inicjacji Game i przekazywać te instancje
@@ -55,5 +60,18 @@ public class Player {
         return Objects.hash(id);
     }
     public int getId(){return id;}
+    public void setWin(){
+        playerBehavior=playerBehavior.setWin();
+    }
+    public void setWait(){
+        playerBehavior=playerBehavior.setWait();
+    }
+    public void setActive(){
+        playerBehavior=playerBehavior.setActive();
+    }
+    public PlayerState getState()
+    {
+        return playerBehavior.getState();
+    }
 }
 

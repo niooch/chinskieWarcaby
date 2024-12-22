@@ -1,5 +1,7 @@
 package com.jkpr.chinesecheckers.server;
 
+import com.jkpr.chinesecheckers.server.gamelogic.Game;
+
 /**
  * The {@code GameBuilder} interface defines the blueprint for constructing a game of Chinese checkers.
  * <p>

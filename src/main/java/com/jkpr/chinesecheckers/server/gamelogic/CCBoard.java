@@ -1,6 +1,5 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +12,7 @@ import java.util.List;
  */
 public class CCBoard extends AbstractBoard {
     private Player[] playerDistribution=new Player[6];
+    private int count;
     /**
      * Constructs a {@code CCBoard} with the appropriate layout and initial state.
      * <p>
@@ -21,6 +21,7 @@ public class CCBoard extends AbstractBoard {
      * </p>
      */
     public CCBoard(int count) {
+        this.count=count;
         //setting players
         for(int i=0;i<count;i++)
             players.add(new Player(i));
@@ -53,6 +54,8 @@ public class CCBoard extends AbstractBoard {
                 Position pos = new Position(x, y);
                 if (!cells.containsKey(pos)) {
                     Cell cell = new Cell(pos, getOwners(x, y));
+                    cell.setPiece(getPiece(x,y));
+                    cell.setWinner(getWinner(x,y));
                     cells.put(pos, cell);
                 }
                 x++;
@@ -68,6 +71,7 @@ public class CCBoard extends AbstractBoard {
                 if (!cells.containsKey(pos)) {
                     Cell cell = new Cell(pos, getOwners(x, y));
                     cell.setPiece(getPiece(x,y));
+                    cell.setWinner(getWinner(x,y));
                     cells.put(pos, cell);
                 }
                 x--;
@@ -151,6 +155,29 @@ public class CCBoard extends AbstractBoard {
             return null;
         }
     }
+    private Player getWinner(int x, int y) {
+        if (y < -4) {
+            return playerDistribution[3];
+        }
+        else if (y > 4) {
+            return playerDistribution[0];
+        }
+        else if (x < -4) {
+            return playerDistribution[4];
+        }
+        else if (x > 4) {
+            return playerDistribution[1];
+        }
+        else if ( x + y >= 5) {
+            return playerDistribution[5];
+        }
+        else if (x + y <= -5) {
+            return playerDistribution[2];
+        }
+        else {
+            return null;
+        }
+    }
 
     @Override
     public String toString() {
@@ -176,6 +203,41 @@ public class CCBoard extends AbstractBoard {
     public void makeMove(Position start, Position end) {
         cells.get(end).setPiece(cells.get(start).getPiece());
         cells.get(start).setPiece(null);
+    }
+
+    @Override
+    public boolean checkIfWon(Player player) {
+        int finishedCount=0;
+        int cellNumber = 13;
+        for (int y = -4; y <= 8; y++) {
+            int x = -4;
+            for (int k = 0; k < cellNumber; k++) {
+                Position pos = new Position(x, y);
+                if(cells.get(pos).getWinner().equals(player))
+                {
+                    if(!cells.get(pos).isEmpty() && cells.get(pos).getPiece().getOwner().equals(player))
+                        finishedCount++;
+                }
+                x++;
+            }
+            cellNumber--;
+        }
+
+        cellNumber = 13;
+        for (int y = 4; y >= -8; y--) {
+            int x = 4;
+            for (int k = 0; k < cellNumber; k++) {
+                Position pos = new Position(x, y);
+                if(cells.get(pos).getWinner().equals(player))
+                {
+                    if(!cells.get(pos).isEmpty() && cells.get(pos).getPiece().getOwner().equals(player))
+                        finishedCount++;
+                }
+                x--;
+            }
+            cellNumber--;
+        }
+        return finishedCount==10;
     }
 }
 

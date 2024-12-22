@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ public class Cell {
 
     /** The list of players who own this cell. */
     private List<Player> owners;
+    private Player winner;
 
     /**
      * Constructs a {@code Cell} with a given position and a list of owners.
@@ -86,5 +87,12 @@ public class Cell {
         if(piece==null)
             return ".";
         return piece.toString();
+    }
+    public void setWinner(Player player){
+        winner=player;
+    }
+
+    public Player getWinner() {
+        return winner;
     }
 }

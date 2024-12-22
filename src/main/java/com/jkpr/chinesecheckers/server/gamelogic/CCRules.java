@@ -1,9 +1,10 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CCRules extends AbstractRules{
+    //todo zabronić graczowi wychodzić poza granicę wygranego trójkąta jeżeli tam jest
     @Override
     public boolean isValidMove(AbstractBoard board,Player player, Position start, Position destination) {
         if (board.getCells().containsKey(start) && board.getCells().get(start).checkPlayer(player)) {

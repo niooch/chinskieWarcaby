@@ -1,10 +1,8 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
-import com.jkpr.chinesecheckers.server.message.Message;
 import com.jkpr.chinesecheckers.server.message.MoveMessage;
 import com.jkpr.chinesecheckers.server.message.UpdateMessage;
-
-import java.util.HashMap;
+import com.jkpr.chinesecheckers.server.states.PlayerState;
 
 /**
  * Represents the game of Chinese checkers.
@@ -48,30 +46,47 @@ public class Game {
      *
      */
     public UpdateMessage nextMove(MoveMessage message, Player player) {
+        //first system checks whether player skipped or not
+        //if its true then it changes states of players
         if(message.getSkip())
         {
-            //player next
-            return UpdateMessage.fromContent("SKIP");
+            player.setWait();
+            Player tempRef=board.getPlayer((player.getId()+1)%playersCount);
+            while(!tempRef.getState().equals(PlayerState.WAIT))
+                tempRef=board.getPlayer((player.getId()+1)%playersCount);
+            tempRef.setActive();
+
+            //FORMAT: SKIP NEXT_ID "id kolejnego"
+            return UpdateMessage.fromContent("SKIP NEXT_ID "+tempRef.getId());
         }
+        //otherwise it checks whether player inserted valid move
         Move move=message.getMove();
         boolean validation=rules.isValidMove(board,player,move.getStart(),move.getEnd());
+        //if so, it proceeds to complete this move
         if(validation)
         {
-            board.makeMove(move.getStart(),move.getEnd());
-            //player next
-            //return win winPlayer startPos endPos nextPlayer
-            //TODO jakoś tak to będzie zobaczy się później
-            return UpdateMessage.fromContent(move+" tutaj_nextPlayer tutaj_czy_win tutaj_kto_win");
+            int winPlayer=-1;
+            //if player won
+            if(board.checkIfWon(player))
+            {
+                winPlayer=player.getId();
+                player.setWin();
+            }
+            else
+                player.setWait();
+            //choosing next player
+            Player tempRef=board.getPlayer((player.getId()+1)%playersCount);
+            while(!tempRef.getState().equals(PlayerState.WAIT))
+                tempRef=board.getPlayer((player.getId()+1)%playersCount);
+            tempRef.setActive();
+
+            //FORMAT: "ruch" NEXT_ID "id kolejnego" WIN_ID "id wygranego" (jeżeli nikt to null)
+            return UpdateMessage.fromContent(move+" NEXT_ID "+tempRef.getId() +" WIN_ID "+winPlayer);
         }
         else
         {
             return UpdateMessage.fromContent("FAIL");
         }
-        //TODO tak naprawdę kolejnym krokiem tutaj będzie coś w stylu board.move albo player.move
-        // (chyba to drugie lepsze) jakoś muszę jeszcze rozwiązać problem instancji pionków i tego kto i gdzie
-        // ma mieć do nich dostęp.
-        // Dalej trzeba będzie zmienić stan graczy, ale tego jeszcze nie zaimplementowałem
-        // I na koniec zostaje już tylko sformułować wnioski i to raczej tyle jeśli chodzi o logikę gry
     }
 
     /**

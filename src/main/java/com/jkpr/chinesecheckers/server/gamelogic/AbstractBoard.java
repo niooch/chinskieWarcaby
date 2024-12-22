@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers.server;
+package com.jkpr.chinesecheckers.server.gamelogic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,5 +28,7 @@ public abstract class AbstractBoard {
     public List<Position> getMovements(){return movements;}
     public abstract String toString();
     public abstract void makeMove(Position start,Position end);
+    public abstract boolean checkIfWon(Player player);
+    public Player getPlayer(int id){return players.get(id);}
 
 }
