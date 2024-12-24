@@ -1,6 +1,7 @@
 package com.jkpr.chinesecheckers.server.gamelogic;
 
 import com.jkpr.chinesecheckers.server.GameBuilder;
+import com.jkpr.chinesecheckers.server.gamelogic.boards.CCBoard;
 
 /**
  * The {@code CCBuilder} class is a concrete implementation of the {@code GameBuilder} interface

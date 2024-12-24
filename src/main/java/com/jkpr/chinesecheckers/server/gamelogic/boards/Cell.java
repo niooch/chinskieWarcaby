@@ -1,4 +1,8 @@
-package com.jkpr.chinesecheckers.server.gamelogic;
+package com.jkpr.chinesecheckers.server.gamelogic.boards;
+
+import com.jkpr.chinesecheckers.server.gamelogic.Piece;
+import com.jkpr.chinesecheckers.server.gamelogic.Player;
+import com.jkpr.chinesecheckers.server.gamelogic.Position;
 
 import java.util.List;
 

@@ -1,5 +1,11 @@
-package com.jkpr.chinesecheckers.server.gamelogic;
+package com.jkpr.chinesecheckers.server.gamelogic.boards;
 
+import com.jkpr.chinesecheckers.server.exceptions.InvalidNumberOfPlayers;
+import com.jkpr.chinesecheckers.server.gamelogic.Piece;
+import com.jkpr.chinesecheckers.server.gamelogic.Player;
+import com.jkpr.chinesecheckers.server.gamelogic.Position;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +17,7 @@ import java.util.List;
  * </p>
  */
 public class CCBoard extends AbstractBoard {
-    private Player[] playerDistribution=new Player[6];
+    private final Player[] playerDistribution=new Player[6];
     private int count;
     /**
      * Constructs a {@code CCBoard} with the appropriate layout and initial state.
@@ -26,25 +32,41 @@ public class CCBoard extends AbstractBoard {
         for(int i=0;i<count;i++)
             players.add(new Player(i));
         //distribution player array
-        for(double i=0;i<6;i++)
+        switch(count)
         {
-            double value=i*(double)count/6;
-            if(Math.floor(value)==value)
-            {
-                playerDistribution[(int)i]=players.get((int)value);
-            }
-            else
-            {
-                playerDistribution[(int)i]=null;
-            }
+            case 2:
+                playerDistribution[0]=players.get(0);
+                playerDistribution[3]=players.get(1);
+                break;
+            case 3:
+                playerDistribution[0]=players.get(0);
+                playerDistribution[4]=players.get(1);
+                playerDistribution[2]=players.get(2);
+                break;
+            case 4:
+                playerDistribution[0]=players.get(0);
+                playerDistribution[4]=players.get(1);
+                playerDistribution[1]=players.get(2);
+                playerDistribution[3]=players.get(3);
+                break;
+            case 6:
+                playerDistribution[0]=players.get(0);
+                playerDistribution[1]=players.get(1);
+                playerDistribution[2]=players.get(2);
+                playerDistribution[3]=players.get(3);
+                playerDistribution[4]=players.get(4);
+                playerDistribution[5]=players.get(5);
+                break;
+            default:
+                throw new InvalidNumberOfPlayers("");
         }
         // Movement possibilities
         movements.add(new Position(-1, 0));
         movements.add(new Position(1, 0));
         movements.add(new Position(0, -1));
         movements.add(new Position(0, 1));
-        movements.add(new Position(1, 1));
-        movements.add(new Position(-1, -1));
+        movements.add(new Position(1, -1));
+        movements.add(new Position(-1, 1));
 
         // Board creation
         int cellNumber = 13;
@@ -91,19 +113,25 @@ public class CCBoard extends AbstractBoard {
      * @return the list of {@code AbstractPlayer}s who own the cell at the given coordinates
      */
     private List<Player> getOwners(int x, int y) {
-        List<Player> list;
+        List<Player> list=new ArrayList<>();
         if (y < -4 || y > 4) {
-            list=List.of(playerDistribution[0],playerDistribution[3]);
+            list.add(playerDistribution[0]);
+            list.add(playerDistribution[3]);
         }
         else if (x < -4 || x > 4) {
-            list=List.of(playerDistribution[1],playerDistribution[4]);
+            list.add(playerDistribution[1]);
+            list.add(playerDistribution[4]);
         }
         else if (x + y <= -5 || x + y >= 5) {
-            list=List.of(playerDistribution[2],playerDistribution[5]);
+            list.add(playerDistribution[2]);
+            list.add(playerDistribution[5]);
         } else {
-            list=List.of(playerDistribution[0],playerDistribution[3],
-                    playerDistribution[1],playerDistribution[4],
-                    playerDistribution[2],playerDistribution[5]);
+            list.add(playerDistribution[0]);
+            list.add(playerDistribution[1]);
+            list.add(playerDistribution[2]);
+            list.add(playerDistribution[3]);
+            list.add(playerDistribution[4]);
+            list.add(playerDistribution[5]);
         }
         return list;
     }
@@ -124,14 +152,14 @@ public class CCBoard extends AbstractBoard {
                 return new Piece(player);
         }
         else if (x < -4) {
-            Player player=playerDistribution[1];
+            Player player=playerDistribution[4];
             if(player==null)
                 return null;
             else
                 return new Piece(player);
         }
         else if (x > 4) {
-            Player player=playerDistribution[4];
+            Player player=playerDistribution[1];
             if(player==null)
                 return null;
             else
@@ -163,10 +191,10 @@ public class CCBoard extends AbstractBoard {
             return playerDistribution[0];
         }
         else if (x < -4) {
-            return playerDistribution[4];
+            return playerDistribution[1];
         }
         else if (x > 4) {
-            return playerDistribution[1];
+            return playerDistribution[4];
         }
         else if ( x + y >= 5) {
             return playerDistribution[5];
@@ -208,34 +236,14 @@ public class CCBoard extends AbstractBoard {
     @Override
     public boolean checkIfWon(Player player) {
         int finishedCount=0;
-        int cellNumber = 13;
-        for (int y = -4; y <= 8; y++) {
-            int x = -4;
-            for (int k = 0; k < cellNumber; k++) {
-                Position pos = new Position(x, y);
-                if(cells.get(pos).getWinner().equals(player))
-                {
-                    if(!cells.get(pos).isEmpty() && cells.get(pos).getPiece().getOwner().equals(player))
-                        finishedCount++;
-                }
-                x++;
+        for(Position pos:cells.keySet())
+        {
+            if(cells.get(pos).getWinner().equals(player) &&
+                    !cells.get(pos).isEmpty() &&
+                    cells.get(pos).getPiece().getOwner().equals(player))
+            {
+                    finishedCount++;
             }
-            cellNumber--;
-        }
-
-        cellNumber = 13;
-        for (int y = 4; y >= -8; y--) {
-            int x = 4;
-            for (int k = 0; k < cellNumber; k++) {
-                Position pos = new Position(x, y);
-                if(cells.get(pos).getWinner().equals(player))
-                {
-                    if(!cells.get(pos).isEmpty() && cells.get(pos).getPiece().getOwner().equals(player))
-                        finishedCount++;
-                }
-                x--;
-            }
-            cellNumber--;
         }
         return finishedCount==10;
     }

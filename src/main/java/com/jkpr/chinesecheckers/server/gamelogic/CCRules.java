@@ -1,12 +1,15 @@
 package com.jkpr.chinesecheckers.server.gamelogic;
 
+import com.jkpr.chinesecheckers.server.gamelogic.boards.AbstractBoard;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class CCRules extends AbstractRules{
     //todo zabronić graczowi wychodzić poza granicę wygranego trójkąta jeżeli tam jest
     @Override
-    public boolean isValidMove(AbstractBoard board,Player player, Position start, Position destination) {
+    public boolean isValidMove(AbstractBoard board, Player player, Position start, Position destination) {
+        System.out.println("działa");
         if (board.getCells().containsKey(start) && board.getCells().get(start).checkPlayer(player)) {
             List<Position> possibilities = new ArrayList<>();
             findPossibilities(board,possibilities, player, start);
@@ -31,11 +34,30 @@ public class CCRules extends AbstractRules{
         for (Position move : board.getMovements()) {
             Position potentialMove = new Position(start, move);
             if (isMoveLegal(board,potentialMove, player)) {
-                alreadyVisited.add(new Position(start, move));
+                if(!alreadyVisited.contains(potentialMove)) {
+                    alreadyVisited.add(new Position(start, move));
+                }
+            } else {
                 potentialMove = new Position(potentialMove, move);
-            } else if (!alreadyVisited.contains(potentialMove) && isMoveLegal(board,potentialMove, player)) {
+                if (!alreadyVisited.contains(potentialMove) && isMoveLegal(board,potentialMove, player)) {
+                    alreadyVisited.add(potentialMove);
+                    findNetwork(board, alreadyVisited, player, potentialMove);
+                }
+            }
+        }
+    }
+    private void findNetwork(AbstractBoard board,List<Position> alreadyVisited,Player player,Position position) {
+        for(Position move:board.getMovements())
+        {
+            Position potentialMove=new Position(position,move);
+            if(isMoveLegal(board,potentialMove, player))
+                continue;
+            potentialMove=new Position(potentialMove,move);
+
+            if(!alreadyVisited.contains(potentialMove) && isMoveLegal(board,potentialMove, player))
+            {
                 alreadyVisited.add(potentialMove);
-                findPossibilities(board,alreadyVisited, player, potentialMove);
+                findNetwork(board, alreadyVisited, player, potentialMove);
             }
         }
     }
