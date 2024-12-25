@@ -1,5 +1,6 @@
 package com.jkpr.chinesecheckers.server.gamelogic.boards;
 
+import com.jkpr.chinesecheckers.server.gamelogic.Move;
 import com.jkpr.chinesecheckers.server.gamelogic.Player;
 import com.jkpr.chinesecheckers.server.gamelogic.Position;
 
@@ -30,8 +31,10 @@ public abstract class AbstractBoard {
     public Map<Position, Cell> getCells(){return cells;}
     public List<Position> getMovements(){return movements;}
     public abstract String toString();
-    public abstract void makeMove(Position start,Position end);
+    public abstract void makeMove(Move move);
     public abstract boolean checkIfWon(Player player);
     public Player getPlayer(int id){return players.get(id);}
+    public int getNumberOfPlayers(){return players.size();}
+    public abstract int setStates(boolean win,Player player);
 
 }

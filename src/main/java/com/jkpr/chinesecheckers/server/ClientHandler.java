@@ -10,7 +10,7 @@ public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private PrintWriter out;
     private Scanner in;
-    private GameSession gameSession;
+    private GameAdapter gameAdapter;
     private String playerId;
 
     public ClientHandler(Socket clientSocket){
@@ -19,9 +19,9 @@ public class ClientHandler implements Runnable {
         this.playerId = UUID.randomUUID().toString();
     }
 
-    public void setGameSession(GameSession gameSession)
+    public void setGameSession(GameAdapter gameAdapter)
     {
-        this.gameSession=gameSession;
+        this.gameAdapter = gameAdapter;
     }
 
     @Override
@@ -44,11 +44,11 @@ public class ClientHandler implements Runnable {
                     MoveMessage msg = (MoveMessage) message;
                     System.out.println("odebrano wiadomosc MOVE od " + playerId + ": " + msg.serialize());
                     //wyslij wiadomosc do wszystkich graczy
-                    if(gameSession == null){
+                    if(gameAdapter == null){
                         System.out.println("gracz nie jest przypisany do sesji gry");
                         continue;
                     } else {
-                        gameSession.processMove(msg, this);
+                        gameAdapter.processMove(msg, this);
                     }
                 }
                 else{
@@ -77,8 +77,8 @@ public class ClientHandler implements Runnable {
         return playerId;
     }
 
-    public void assignGameSession(GameSession gameSession) {
-        this.gameSession = gameSession;
+    public void assignGameSession(GameAdapter gameAdapter) {
+        this.gameAdapter = gameAdapter;
     }
     //zamkniecie handlera
     private void cleanUp() {

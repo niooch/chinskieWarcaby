@@ -1,20 +1,29 @@
 package com.jkpr.chinesecheckers.server.gamelogic;
 
 import com.jkpr.chinesecheckers.server.gamelogic.boards.AbstractBoard;
+import com.jkpr.chinesecheckers.server.states.PlayerState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CCRules extends AbstractRules{
-    //todo zabronić graczowi wychodzić poza granicę wygranego trójkąta jeżeli tam jest
     @Override
-    public boolean isValidMove(AbstractBoard board, Player player, Position start, Position destination) {
-        System.out.println("działa");
+    public boolean isValidMove(AbstractBoard board, Player player, Move move) {
+        Position start=move.getStart(),destination=move.getEnd();
+        if (!player.getState().equals(PlayerState.ACTIVE))
+            return false;
         if (board.getCells().containsKey(start) && board.getCells().get(start).checkPlayer(player)) {
+            if(player.equals(board.getCells().get(start).getWinner())
+                    && !player.equals(board.getCells().get(destination).getWinner()))
+            {
+                System.out.println("123");
+                return false;
+            }
             List<Position> possibilities = new ArrayList<>();
             findPossibilities(board,possibilities, player, start);
             return possibilities.contains(destination);
         }
+        System.out.println("456");
         return false;
     }
 

@@ -30,11 +30,11 @@ public class BoardTest extends TestCase {
         assertEquals(expected,testOwner);
 
         testOwner=board.getCells().get(new Position(3,3)).getPiece().getOwner();
-        expected=board.getPlayer(2);
+        expected=board.getPlayer(1);
         assertEquals(expected,testOwner);
 
         testOwner=board.getCells().get(new Position(-6,3)).getPiece().getOwner();
-        expected=board.getPlayer(1);
+        expected=board.getPlayer(2);
         assertEquals(expected,testOwner);
 
         //4 players
@@ -87,9 +87,19 @@ public class BoardTest extends TestCase {
         AbstractBoard board=new CCBoard(2);
         AbstractRules rules=new CCRules();
         //valid moves
-        assertTrue(rules.isValidMove(board, board.getPlayer(0), new Position(3,-5), new Position(3,-4)));
-        board.makeMove(new Position(3,-5), new Position(3,-4));
-        assertFalse(rules.isValidMove(board, board.getPlayer(0), new Position(3,-5), new Position(3,-4)));
-        assertTrue(rules.isValidMove(board, board.getPlayer(0), new Position(4,-5), new Position(2,-3)));
+        //checking basic move
+        assertTrue(rules.isValidMove(board, board.getPlayer(0), new Move(3,-5,3,-4)));
+        //checking invalid move
+        board.makeMove(new Move(3,-5,3,-4));
+        assertFalse(rules.isValidMove(board, board.getPlayer(0), new Move(3,-5,3,-4)));
+        //checking basic extended move
+        assertTrue(rules.isValidMove(board, board.getPlayer(0), new Move(4,-5,2,-3)));
+        //checking multiple move(double)
+        board.makeMove(new Move(2,-5,2,-2));
+        assertTrue(rules.isValidMove(board, board.getPlayer(0), new Move(4,-5,2,-1)));
+
+        //checking whether player can leave winning triangle
+        board.makeMove(new Move(1,-5,-1,5));
+        assertFalse(rules.isValidMove(board, board.getPlayer(0), new Move(-1,5,-1,4)));
     }
 }

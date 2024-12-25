@@ -9,6 +9,10 @@ public class Move {
         start=new Position(xStart,yStart);
         end=new Position(xEnd,yEnd);
     }
+    public Move(Position start,Position end){
+        this.start=start;
+        this.end=end;
+    }
 
     public Position getEnd() {
         return end;

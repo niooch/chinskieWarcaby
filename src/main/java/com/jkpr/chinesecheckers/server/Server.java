@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.*;
-import com.jkpr.chinesecheckers.server.message.*;
 
 public class Server {
     private static final int PORT = 12345;          //port serwera
@@ -46,10 +45,10 @@ public class Server {
             }
             //odpal sesje gry
             System.out.println("wszyscy gracze dolaczyli, tworze gre");
-            GameSession gameSession = new GameSession(players, this);
+            GameAdapter gameAdapter = new GameAdapter(players, this);
             for (ClientHandler handler : players) {
                 //aby gracz mogl wysylac wiadomosci do innych
-                handler.assignGameSession(gameSession);
+                handler.assignGameSession(gameAdapter);
             }
             while(true){
                 //aby istnal watek serwera, potrzebny przechowywania instancji gameSession

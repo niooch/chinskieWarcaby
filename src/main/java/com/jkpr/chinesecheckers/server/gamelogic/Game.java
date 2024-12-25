@@ -34,6 +34,7 @@ public class Game {
     /** The game board. */
     private AbstractBoard board;
     private AbstractRules rules;
+    private int winningPlayers=0;
 
     /**
      * Processes the next move in the game.
@@ -47,42 +48,38 @@ public class Game {
      *
      */
     public UpdateMessage nextMove(MoveMessage message, Player player) {
+        //TODO można to inaczej zrobić i trochę przenieść do board, ale przemyśle jaką mam wizję i to zrobie
+        // tak żeby miało to sens logiczny
+        if(player.getState()!=PlayerState.ACTIVE)
+            return UpdateMessage.fromContent("FAIL");
         //first system checks whether player skipped or not
         //if its true then it changes states of players
         if(message.getSkip())
         {
-            player.setWait();
-            Player tempRef=board.getPlayer((player.getId()+1)%playersCount);
-            while(!tempRef.getState().equals(PlayerState.WAIT))
-                tempRef=board.getPlayer((player.getId()+1)%playersCount);
-            tempRef.setActive();
-
-            //FORMAT: SKIP NEXT_ID "id kolejnego"
-            return UpdateMessage.fromContent("SKIP NEXT_ID "+tempRef.getId());
+            return UpdateMessage.fromContent("SKIP NEXT_ID "+board.setStates(false,player));
         }
         //otherwise it checks whether player inserted valid move
-        Move move=message.getMove();
-        boolean validation=rules.isValidMove(board,player,move.getStart(),move.getEnd());
+        boolean validation=rules.isValidMove(board,player,message.getMove());
         //if so, it proceeds to complete this move
         if(validation)
         {
-            int winPlayer=-1;
+            board.makeMove(message.getMove());
+            String winPlayer="null";
             //if player won
-            if(board.checkIfWon(player))
+            boolean win=board.checkIfWon(player);
+            if(win)
             {
-                winPlayer=player.getId();
-                player.setWin();
+                winPlayer=String.valueOf(player.getId());
+                winningPlayers++;
             }
-            else
-                player.setWait();
-            //choosing next player
-            Player tempRef=board.getPlayer((player.getId()+1)%playersCount);
-            while(!tempRef.getState().equals(PlayerState.WAIT))
-                tempRef=board.getPlayer((player.getId()+1)%playersCount);
-            tempRef.setActive();
 
             //FORMAT: "ruch" NEXT_ID "id kolejnego" WIN_ID "id wygranego" (jeżeli nikt to null)
-            return UpdateMessage.fromContent(move+" NEXT_ID "+tempRef.getId() +" WIN_ID "+winPlayer);
+            String output=message.getMove()+" NEXT_ID "+board.setStates(win,player) +" WIN_ID "+winPlayer;
+            if(winningPlayers==board.getNumberOfPlayers()-1)
+            {
+                output+=" END";
+            }
+            return UpdateMessage.fromContent(output);
         }
         else
         {

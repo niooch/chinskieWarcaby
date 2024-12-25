@@ -1,9 +1,11 @@
 package com.jkpr.chinesecheckers.server.gamelogic.boards;
 
 import com.jkpr.chinesecheckers.server.exceptions.InvalidNumberOfPlayers;
+import com.jkpr.chinesecheckers.server.gamelogic.Move;
 import com.jkpr.chinesecheckers.server.gamelogic.Piece;
 import com.jkpr.chinesecheckers.server.gamelogic.Player;
 import com.jkpr.chinesecheckers.server.gamelogic.Position;
+import com.jkpr.chinesecheckers.server.states.PlayerState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,6 @@ import java.util.List;
  */
 public class CCBoard extends AbstractBoard {
     private final Player[] playerDistribution=new Player[6];
-    private int count;
     /**
      * Constructs a {@code CCBoard} with the appropriate layout and initial state.
      * <p>
@@ -27,10 +28,10 @@ public class CCBoard extends AbstractBoard {
      * </p>
      */
     public CCBoard(int count) {
-        this.count=count;
         //setting players
         for(int i=0;i<count;i++)
             players.add(new Player(i));
+        players.get(0).setActive();
         //distribution player array
         switch(count)
         {
@@ -40,8 +41,8 @@ public class CCBoard extends AbstractBoard {
                 break;
             case 3:
                 playerDistribution[0]=players.get(0);
-                playerDistribution[4]=players.get(1);
-                playerDistribution[2]=players.get(2);
+                playerDistribution[4]=players.get(2);
+                playerDistribution[2]=players.get(1);
                 break;
             case 4:
                 playerDistribution[0]=players.get(0);
@@ -228,7 +229,8 @@ public class CCBoard extends AbstractBoard {
     }
 
     @Override
-    public void makeMove(Position start, Position end) {
+    public void makeMove(Move move) {
+        Position start=move.getStart(),end=move.getEnd();
         cells.get(end).setPiece(cells.get(start).getPiece());
         cells.get(start).setPiece(null);
     }
@@ -238,7 +240,7 @@ public class CCBoard extends AbstractBoard {
         int finishedCount=0;
         for(Position pos:cells.keySet())
         {
-            if(cells.get(pos).getWinner().equals(player) &&
+            if(player.equals(cells.get(pos).getWinner()) &&
                     !cells.get(pos).isEmpty() &&
                     cells.get(pos).getPiece().getOwner().equals(player))
             {
@@ -246,6 +248,21 @@ public class CCBoard extends AbstractBoard {
             }
         }
         return finishedCount==10;
+    }
+    @Override
+    public int setStates(boolean win,Player player){
+        if(win)
+            player.setWin();
+        else
+            player.setWait();
+
+        //choosing next player
+        Player tempRef=getPlayer((player.getId()+1)%getNumberOfPlayers());
+        while(!tempRef.getState().equals(PlayerState.WAIT))
+            tempRef=getPlayer((player.getId()+1)%getNumberOfPlayers());
+        tempRef.setActive();
+
+        return tempRef.getId();
     }
 }
 

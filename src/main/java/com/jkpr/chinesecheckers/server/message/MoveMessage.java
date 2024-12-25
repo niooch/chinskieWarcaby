@@ -24,18 +24,6 @@ public class MoveMessage extends Message{
         this.r2 = r2;
         this.move = new Move(q1, r1, q2, r2);
     }
-    public int getQ1(){
-        return q1;
-    }
-    public int getR1(){
-        return r1;
-    }
-    public int getQ2(){
-        return q2;
-    }
-    public int getR2(){
-        return r2;
-    }
     @Override
     public String serialize(){
         return getType().name()+ " " + q1 + "," + r1 + " " + q2 + "," + r2;
