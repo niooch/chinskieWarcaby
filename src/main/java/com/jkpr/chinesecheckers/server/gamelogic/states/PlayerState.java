@@ -1,4 +1,4 @@
-package com.jkpr.chinesecheckers.server.states;
+package com.jkpr.chinesecheckers.server.gamelogic.states;
 
 public enum PlayerState {
     WIN {

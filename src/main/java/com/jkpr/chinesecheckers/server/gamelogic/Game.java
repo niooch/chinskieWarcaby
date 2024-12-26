@@ -3,7 +3,7 @@ package com.jkpr.chinesecheckers.server.gamelogic;
 import com.jkpr.chinesecheckers.server.gamelogic.boards.AbstractBoard;
 import com.jkpr.chinesecheckers.server.message.MoveMessage;
 import com.jkpr.chinesecheckers.server.message.UpdateMessage;
-import com.jkpr.chinesecheckers.server.states.PlayerState;
+import com.jkpr.chinesecheckers.server.gamelogic.states.PlayerState;
 
 /**
  * Represents the game of Chinese checkers.
@@ -50,6 +50,7 @@ public class Game {
     public UpdateMessage nextMove(MoveMessage message, Player player) {
         //TODO można to inaczej zrobić i trochę przenieść do board, ale przemyśle jaką mam wizję i to zrobie
         // tak żeby miało to sens logiczny
+        System.out.println(message.serialize());
         if(player.getState()!=PlayerState.ACTIVE)
             return UpdateMessage.fromContent("FAIL");
         //first system checks whether player skipped or not

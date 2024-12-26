@@ -5,7 +5,7 @@ import com.jkpr.chinesecheckers.server.gamelogic.Move;
 import com.jkpr.chinesecheckers.server.gamelogic.Piece;
 import com.jkpr.chinesecheckers.server.gamelogic.Player;
 import com.jkpr.chinesecheckers.server.gamelogic.Position;
-import com.jkpr.chinesecheckers.server.states.PlayerState;
+import com.jkpr.chinesecheckers.server.gamelogic.states.PlayerState;
 
 import java.util.ArrayList;
 import java.util.List;

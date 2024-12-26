@@ -1,5 +1,10 @@
 package com.jkpr.chinesecheckers.client;
 
+import com.jkpr.chinesecheckers.client.boards.AbstractBoardClient;
+import com.jkpr.chinesecheckers.client.boards.CCBoardClient;
+import com.jkpr.chinesecheckers.server.gamelogic.Move;
+import com.jkpr.chinesecheckers.server.gamelogic.Player;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -10,27 +15,25 @@ public class Client {
     private Scanner scanner;
     private PrintWriter out;
     private Scanner in;
+    private AbstractBoardClient board;
 
     public Client() {
         try {
-            //laczenie z serwerem
-            socket = new Socket("79.189.125.171", 1001);
+            socket = new Socket("localhost", 12345);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new Scanner(socket.getInputStream());
-            scanner = new Scanner(System.in);
+            scanner = new Scanner(System.in); // do czytanie wpisu z konsoli klienta
             System.out.println("polaczono z serwerem");
         } catch (IOException e) {
             System.err.println("blad polaczenia z serwerem: " + e.getMessage());
         }
     }
-
     public static void main(String[] args){
         Client client = new Client();
         client.start();
     }
-
     public void start() {
-        new Thread(this::recieveMessages).start();
+        new Thread(this::receiveMessages).start();
         handleUserInput();
     }
 
@@ -45,11 +48,22 @@ public class Client {
             out.flush();
         }
     }
-    private void recieveMessages() {
+
+
+
+    private void receiveMessages() {
         while (in.hasNextLine()) {
             String linia = in.nextLine();
             System.out.println("odebrano: " + linia);
+            String[] message=linia.split(" ");
+            if(message[0].equals("GEN")){
+                switch (message[1])
+                {
+                    case "CC":
+                        board=new CCBoardClient(Integer.parseInt(message[2]));
+                        break;
+                }
+            }
         }
     }
-
 }

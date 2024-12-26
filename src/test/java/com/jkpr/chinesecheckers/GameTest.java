@@ -72,4 +72,20 @@ public class GameTest extends TestCase {
         updateMessage=game.nextMove(new MoveMessage(0,-4,-1,-4),board.getPlayer(1));
         assertEquals("0 -4 -1 -4 NEXT_ID 2 WIN_ID 1 END",updateMessage.getContent());
     }
+    public void testSkip(){
+        Game game=new Game();
+        AbstractRules rules=new CCRules();
+        AbstractBoard board=new CCBoard(3);
+        game.setBoard(board);
+        game.setRules(rules);
+
+        UpdateMessage updateMessage=game.nextMove(new MoveMessage(),board.getPlayer(0));
+        assertEquals("SKIP NEXT_ID 1",updateMessage.getContent());
+        updateMessage=game.nextMove(new MoveMessage(),board.getPlayer(1));
+        assertEquals("SKIP NEXT_ID 2",updateMessage.getContent());
+        updateMessage=game.nextMove(new MoveMessage(),board.getPlayer(2));
+        assertEquals("SKIP NEXT_ID 0",updateMessage.getContent());
+        updateMessage=game.nextMove(new MoveMessage(),board.getPlayer(0));
+        assertEquals("SKIP NEXT_ID 1",updateMessage.getContent());
+    }
 }

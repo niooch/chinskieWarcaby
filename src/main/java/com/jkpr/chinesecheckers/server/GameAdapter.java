@@ -21,7 +21,7 @@ public class GameAdapter {
         for(ClientHandler clientHandler:players)
         {
             addPlayer(clientHandler);
-            clientHandler.setGameSession(this);
+            clientHandler.assignGameAdapter(this);
         }
 
     }
@@ -33,10 +33,14 @@ public class GameAdapter {
         return game.nextMove(move,clientHandlerPlayerHashMap.get(clientHandler));
     }
     public void brodcastMessage (MoveMessage move, ClientHandler clientHandler){
+        UpdateMessage updateMessage=game.nextMove(move,clientHandlerPlayerHashMap.get(clientHandler));
         for(ClientHandler player:clients){
-            System.out.println("Sending message to "+player.getPlayerId());
-            player.sendMessage(move);
+            //System.out.println("Sending message to "+player.getPlayerId());
+            player.sendMessage(updateMessage);
         }
     }
-
+    public int getPlayerId(ClientHandler clientHandler)
+    {
+        return clientHandlerPlayerHashMap.get(clientHandler).getId();
+    }
 }

@@ -1,7 +1,7 @@
 package com.jkpr.chinesecheckers.server.gamelogic;
 
 import com.jkpr.chinesecheckers.server.gamelogic.boards.AbstractBoard;
-import com.jkpr.chinesecheckers.server.states.PlayerState;
+import com.jkpr.chinesecheckers.server.gamelogic.states.PlayerState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +16,12 @@ public class CCRules extends AbstractRules{
             if(player.equals(board.getCells().get(start).getWinner())
                     && !player.equals(board.getCells().get(destination).getWinner()))
             {
-                System.out.println("123");
                 return false;
             }
             List<Position> possibilities = new ArrayList<>();
             findPossibilities(board,possibilities, player, start);
             return possibilities.contains(destination);
         }
-        System.out.println("456");
         return false;
     }
 

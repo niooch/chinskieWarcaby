@@ -5,5 +5,6 @@ public enum MessageType {
     //START_GAME,
     MOVE,
     UPDATE,
+    GEN
     //ERROR
 }

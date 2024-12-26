@@ -1,8 +1,8 @@
 package com.jkpr.chinesecheckers.server.gamelogic;
 
-import com.jkpr.chinesecheckers.server.states.PlayerBehavior;
-import com.jkpr.chinesecheckers.server.states.PlayerState;
-import com.jkpr.chinesecheckers.server.states.WaitState;
+import com.jkpr.chinesecheckers.server.gamelogic.states.PlayerBehavior;
+import com.jkpr.chinesecheckers.server.gamelogic.states.PlayerState;
+import com.jkpr.chinesecheckers.server.gamelogic.states.WaitState;
 
 import java.util.List;
 import java.util.Objects;
